@@ -1,0 +1,314 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7f0;
+}
+
+/* Top green bar */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #006837 0%, #00994d 50%, #006837 100%);
+    z-index: 100;
+}
+
+/* Main Container */
+.main-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #006837;
+    margin-bottom: 0.25rem;
+}
+
+.page-header p {
+    color: #6c7a6c;
+    font-size: 0.9rem;
+}
+
+/* Cards */
+.card-custom {
+    background: white;
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.card-header-custom {
+    background: transparent;
+    border-bottom: 1px solid #e8ede6;
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #006837;
+}
+
+/* Profile Card */
+.profile-card {
+    text-align: center;
+    padding: 2rem 1.5rem;
+}
+
+.profile-avatar-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    background: #e8f3ef;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    border: 3px solid #006837;
+}
+
+.profile-avatar i {
+    font-size: 3rem;
+    color: #006837;
+}
+
+.profile-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a2b1a;
+}
+
+.profile-email {
+    font-size: 0.85rem;
+    color: #6c7a6c;
+    margin-bottom: 0.5rem;
+}
+
+.badge-role {
+    display: inline-block;
+    padding: 0.2rem 1rem;
+    background: #e8f3ef;
+    color: #006837;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e8ede6;
+    margin-top: 1.5rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #006837;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    color: #8aa07e;
+    font-weight: 500;
+}
+
+/* Quick Action Buttons */
+.btn-action {
+    background: white;
+    border: 1.5px solid #d4dfcd;
+    border-radius: 12px;
+    padding: 0.7rem;
+    font-weight: 500;
+    color: #1a2b1a;
+    transition: all 0.2s;
+}
+
+.btn-action:hover {
+    background: #e8f3ef;
+    border-color: #006837;
+    color: #006837;
+}
+
+/* Activity List */
+.activity-list {
+    padding: 0.5rem 0;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid #f0f3ed;
+    transition: background 0.2s;
+}
+
+.activity-item:hover {
+    background: #fafdf8;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    background: #e8f3ef;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #006837;
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1a2b1a;
+}
+
+.activity-desc {
+    font-size: 0.8rem;
+    color: #6c7a6c;
+}
+
+.activity-time {
+    font-size: 0.7rem;
+    color: #8aa07e;
+    white-space: nowrap;
+}
+
+/* Preferences */
+.preferences-container {
+    padding: 1rem 1.5rem;
+}
+
+.pref-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f3ed;
+}
+
+.pref-item:last-child {
+    border-bottom: none;
+}
+
+.pref-label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #1a2b1a;
+}
+
+.pref-desc {
+    font-size: 0.75rem;
+    color: #8aa07e;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #006837;
+    border-color: #006837;
+}
+
+.form-switch .form-check-input:focus {
+    border-color: #006837;
+    box-shadow: 0 0 0 2px rgba(0, 104, 55, 0.2);
+}
+
+/* Toast */
+.toast {
+    background: #006837;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+.toast .toast-body {
+    color: white;
+    font-weight: 500;
+    padding: 0.85rem 1.25rem;
+}
+
+.toast .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+/* Refresh Button */
+.btn-refresh {
+    background: transparent;
+    border: 1px solid #d4dfcd;
+    border-radius: 10px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.8rem;
+    color: #006837;
+    transition: all 0.2s;
+}
+
+.btn-refresh:hover {
+    background: #e8f3ef;
+    border-color: #006837;
+}
+
+/* Empty State */
+#emptyActivity {
+    text-align: center;
+    padding: 3rem;
+    color: #8aa07e;
+}
+
+#emptyActivity i {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 1rem;
+    }
+    
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+    
+    .profile-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 0.5rem;
+    }
+}

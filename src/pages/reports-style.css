@@ -1,0 +1,326 @@
+/* ===== AnimoFlow Reports Page - DLSU White & Green Theme ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7f0;
+}
+
+/* Top green bar */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #006837 0%, #00994d 50%, #006837 100%);
+    z-index: 100;
+}
+
+/* Navbar */
+.navbar {
+    background: white;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    padding: 0.75rem 2rem;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #006837;
+}
+
+.navbar-brand:hover {
+    color: #006837;
+}
+
+.logo-icon-small {
+    background: #006837;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.nav-link {
+    color: #4a5b4a;
+    font-weight: 500;
+    margin: 0 0.25rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #006837;
+}
+
+.logout-btn {
+    color: #dc3545;
+}
+
+.logout-btn:hover {
+    color: #b02a37;
+}
+
+/* Main Container */
+.main-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #006837;
+    margin-bottom: 0.25rem;
+}
+
+.page-header p {
+    color: #6c7a6c;
+    font-size: 0.9rem;
+}
+
+/* Cards */
+.card-custom {
+    background: white;
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.card-header-custom {
+    background: transparent;
+    border-bottom: 1px solid #e8ede6;
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #006837;
+}
+
+/* Report Form */
+.report-form-container {
+    padding: 1.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: #006837;
+    margin-bottom: 0.5rem;
+}
+
+.form-select, .form-control {
+    border: 1.5px solid #d4dfcd;
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: #006837;
+    box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.15);
+    outline: none;
+}
+
+/* Queue Selection Buttons */
+.queue-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.queue-option {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem;
+    border: 2px solid #d4dfcd;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+
+.queue-option:hover {
+    border-color: #006837;
+    background: #f0f7f4;
+}
+
+.queue-option.selected {
+    border-color: #006837;
+    background: #e8f3ef;
+}
+
+.queue-option .queue-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.queue-option .queue-desc {
+    font-size: 0.7rem;
+    color: #6c7a6c;
+}
+
+/* Submit Button */
+.btn-submit {
+    background: #006837;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.85rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.25s ease;
+}
+
+.btn-submit:hover {
+    background: #008a47;
+    transform: translateY(-1px);
+}
+
+.btn-submit:active {
+    transform: translateY(0px);
+}
+
+/* Refresh Button */
+.btn-refresh {
+    background: transparent;
+    border: 1px solid #d4dfcd;
+    border-radius: 10px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.8rem;
+    color: #006837;
+    transition: all 0.2s;
+}
+
+.btn-refresh:hover {
+    background: #e8f3ef;
+    border-color: #006837;
+}
+
+/* Report Card */
+.report-card {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e8ede6;
+    transition: background 0.2s;
+}
+
+.report-card:hover {
+    background: #fafdf8;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.report-building {
+    font-weight: 700;
+    color: #006837;
+    font-size: 1rem;
+}
+
+.report-time {
+    font-size: 0.7rem;
+    color: #8aa07e;
+}
+
+.report-elevator {
+    font-size: 0.85rem;
+    color: #4a5b4a;
+    margin-bottom: 0.5rem;
+}
+
+.report-elevator i {
+    color: #8aa07e;
+    margin-right: 0.25rem;
+}
+
+/* Queue Badges */
+.queue-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.queue-badge.short {
+    background: #d4edda;
+    color: #155724;
+}
+
+.queue-badge.medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.queue-badge.long {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Toast */
+.toast {
+    background: #006837;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+.toast .toast-body {
+    color: white;
+    font-weight: 500;
+    padding: 0.85rem 1.25rem;
+}
+
+.toast .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 1rem;
+    }
+    
+    .queue-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Empty State */
+#emptyState {
+    text-align: center;
+    padding: 3rem;
+    color: #8aa07e;
+}
+
+#emptyState i {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}

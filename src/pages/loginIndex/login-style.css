@@ -1,0 +1,374 @@
+/* ===== AnimoFlow Login Page - DLSU White & Green Theme ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7f0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    position: relative;
+}
+
+/* subtle green accent bar at top */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #006837 0%, #00994d 50%, #006837 100%);
+    z-index: 100;
+}
+
+/* Main Card Container */
+.login-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.main-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: transform 0.2s ease;
+    border: 1px solid rgba(0, 104, 55, 0.1);
+}
+
+.main-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Left Brand Panel - DLSU Green */
+.brand-panel {
+    background: #006837;
+    padding: 2.5rem 2rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    position: relative;
+}
+
+.brand-panel::after {
+    content: "⚜️";
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    font-size: 60px;
+    opacity: 0.08;
+    pointer-events: none;
+}
+
+.logo-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: -0.5px;
+}
+
+.brand-panel h2 {
+    font-weight: 700;
+    font-size: 1.9rem;
+    letter-spacing: -0.3px;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+}
+
+.brand-panel .highlight {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0 0.25rem;
+    border-radius: 4px;
+}
+
+.brand-panel .tagline {
+    font-weight: 400;
+    opacity: 0.9;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    border-left: 3px solid rgba(255, 255, 255, 0.3);
+    padding-left: 12px;
+}
+
+.feature-list {
+    list-style: none;
+    margin-top: 1.5rem;
+    padding-left: 0;
+}
+
+.feature-list li {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.feature-list i {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Right Form Panel - White */
+.form-panel {
+    padding: 2.5rem 2rem;
+    background: white;
+}
+
+.form-panel h3 {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: #006837;
+    margin-bottom: 0.4rem;
+}
+
+.form-sub {
+    color: #5a6e5a;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #e8ede6;
+    padding-bottom: 0.75rem;
+}
+
+/* Input Groups - Removed icons */
+.input-group-custom {
+    margin-bottom: 1.5rem;
+}
+
+.input-group-custom label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    color: #006837;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    border: 1.5px solid #d4dfcd;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background-color: #ffffff;
+    color: #1a2b1a;
+}
+
+/* Opaque placeholder text */
+.form-control::placeholder {
+    color: #6c7a6c;
+    opacity: 1;
+}
+
+.form-control:-ms-input-placeholder {
+    color: #6c7a6c;
+}
+
+.form-control::-ms-input-placeholder {
+    color: #6c7a6c;
+}
+
+.form-control:focus {
+    border-color: #006837;
+    box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.15);
+    outline: none;
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+    background-image: none;
+}
+
+.invalid-feedback {
+    font-size: 0.75rem;
+    margin-top: 0.35rem;
+    color: #dc3545;
+    display: block;
+}
+
+.form-text {
+    font-size: 0.7rem;
+    margin-top: 0.35rem;
+    color: #8aa07e;
+}
+
+/* Checkbox styling */
+.form-check-input:checked {
+    background-color: #006837;
+    border-color: #006837;
+}
+
+.form-check-input:focus {
+    border-color: #006837;
+    box-shadow: 0 0 0 2px rgba(0, 104, 55, 0.2);
+}
+
+/* Login Button - DLSU Green */
+.login-btn {
+    background: #006837;
+    border: none;
+    border-radius: 12px;
+    padding: 0.85rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0, 104, 55, 0.25);
+}
+
+.login-btn:hover {
+    background: #008a47;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0, 104, 55, 0.3);
+}
+
+.login-btn:active {
+    transform: translateY(0px);
+}
+
+/* Badge styling - updated green and white theme */
+.badge.bg-light {
+    background-color: #edf3ea !important;
+    color: #006837 !important;
+    padding: 0.4rem 0.75rem;
+    font-weight: 500;
+}
+
+.badge.bg-light i {
+    color: #006837 !important;
+}
+
+/* Toast - DLSU green style */
+.toast-container .toast {
+    background: #006837;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+.toast .toast-body {
+    color: white;
+    font-weight: 500;
+    padding: 0.85rem 1.25rem;
+}
+
+.toast .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+/* Link styles - DLSU green */
+a {
+    color: #006837;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #008a47;
+    text-decoration: underline;
+}
+
+/* Loading state for button */
+.login-btn.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.login-btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    margin-left: 10px;
+    border: 2px solid white;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+    
+    .brand-panel {
+        padding: 2rem 1.5rem;
+    }
+    
+    .form-panel {
+        padding: 1.75rem 1.5rem;
+    }
+    
+    .brand-panel h2 {
+        font-size: 1.5rem;
+    }
+    
+    .form-panel h3 {
+        font-size: 1.5rem;
+    }
+    
+    .logo-text {
+        font-size: 1.3rem;
+    }
+    
+    .feature-list li {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .brand-panel {
+        text-align: center;
+    }
+    
+    .tagline {
+        text-align: left;
+    }
+    
+    .logo-badge {
+        justify-content: center;
+    }
+    
+    .feature-list li {
+        justify-content: flex-start;
+    }
+}

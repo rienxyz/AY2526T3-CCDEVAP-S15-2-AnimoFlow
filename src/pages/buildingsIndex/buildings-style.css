@@ -1,0 +1,18 @@
+.notice {
+    color: green !important;
+}
+
+#confi, #clea {
+    background-color: green !important;
+    color: whitesmoke;
+}
+
+#confi:hover, #clea:hover {
+    background-color: darkgreen !important;
+    color: whitesmoke;
+}
+
+#buildings, #confi, #clea {
+	font-size: 20px;
+	margin: 0;
+}

@@ -1,0 +1,168 @@
+
+ * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+  
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 30px 15px;
+}
+
+.container {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: green;
+  margin-bottom: 20px;
+}
+  
+.from-select-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+  
+.from-select-row label {
+  font-size: 14px;
+  color: green;
+  font-weight: bold;
+}
+  
+.from-select-row select {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+}
+  
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+  
+.search-bar input {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  color: #333;
+}
+  
+.search-bar input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+  
+.search-bar button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  background-color:green;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+  
+/* result */
+.result-count {
+  font-size: 13px;
+  color: green;
+  margin-bottom: 10px;
+}
+  
+.result-card {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+}
+  
+.result-card.expanded {
+  border-color: green;
+}
+  
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+  
+.room-badge {
+  background-color: #eff6ff;
+  color: green;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 5px 12px;
+  border-radius: 6px;
+}
+  
+
+.result-meta {
+  flex: 1;
+}
+  
+.room-name {
+  font-size: 15px;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+  
+.room-floor {
+  font-size: 13px;
+  color: #777;
+  margin-top: 2px;
+}
+  
+/* direction */
+.directions-panel {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+  
+.directions-label {
+  font-size: 11px;
+  font-weight: bold;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+  
+.directions-text {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.no-results {
+  text-align: center;
+  padding: 30px 15px;
+  font-size: 14px;
+  color: #888;
+}
