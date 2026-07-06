@@ -57,7 +57,8 @@ function App() {
       </nav>
 
       {page === "Reports" && <Reports/>}
-      {page === "Profile" && <Profile/>}
+      {page === "Profile" && <Profile setPage={setPage}/>}
+      {page === "FindYourRoom" && <FindYourRoom/>}
 
     </>
   )

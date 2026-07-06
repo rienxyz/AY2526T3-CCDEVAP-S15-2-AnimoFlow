@@ -13,7 +13,7 @@ async function main() {
         const db = client.db("Main");
 
         // Select collection
-        const users = db.collection("profiles");
+        const users = db.collection("reports");
 
 
     } catch (err) {

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./reports-style.css";
 
 function ReportRow() {
@@ -9,6 +10,12 @@ function ReportRow() {
 }
 
 export default function Reports() {
+  const [report, setReport] = useState({
+    building: "",
+    elevator: "",
+    queueLength: ""
+  })
+
   return (
     <>
       <div className="main-container">
@@ -45,6 +52,12 @@ export default function Reports() {
                     <select
                       className="form-select"
                       id="buildingSelect"
+                      onChange={(e) =>
+                        setReport((prev) => ({
+                          ...prev,
+                          building: e.target.value,
+                        }))
+                      }
                       required
                     >
                       <option value="">Select Building</option>
@@ -68,6 +81,12 @@ export default function Reports() {
                       type="text"
                       className="form-control"
                       id="elevatorName"
+                      onChange={(e) =>
+                        setReport((prev) => ({
+                          ...prev,
+                          elevator: e.target.value,
+                        }))
+                      }
                       placeholder="e.g., Elevator A, North Elevator, E1"
                       required
                     />
@@ -84,6 +103,12 @@ export default function Reports() {
                       <div
                         className="queue-option"
                         data-queue="short"
+                        onClick={(e) =>
+                          setReport((prev) => ({
+                            ...prev,
+                            queueLength: "Short",
+                          }))
+                        }
                       >
                         <div className="queue-label">🟢 Short</div>
                         <div className="queue-desc">
@@ -94,6 +119,12 @@ export default function Reports() {
                       <div
                         className="queue-option"
                         data-queue="medium"
+                        onClick={(e) =>
+                          setReport((prev) => ({
+                            ...prev,
+                            queueLength: "Medium",
+                          }))
+                        }
                       >
                         <div className="queue-label">🟡 Medium</div>
                         <div className="queue-desc">
@@ -104,6 +135,12 @@ export default function Reports() {
                       <div
                         className="queue-option"
                         data-queue="long"
+                        onClick={(e) =>
+                          setReport((prev) => ({
+                            ...prev,
+                            queueLength: "Long",
+                          }))
+                        }
                       >
                         <div className="queue-label">🔴 Long</div>
                         <div className="queue-desc">
@@ -196,7 +233,10 @@ export default function Reports() {
                   ></i>
 
                   <p className="mt-2">
-                    No recent reports. Be the first to submit!
+                    No recent reports. Be the first to submit!<br/>
+                    {/* {report.building}<br/>
+                    {report.elevator}<br/>
+                    {report.queueLength}<br/> */}
                   </p>
                 </div>
               </div>

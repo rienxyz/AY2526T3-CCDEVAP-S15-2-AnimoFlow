@@ -1,6 +1,6 @@
 import "./profile-style.css";
 
-export default function Profile() {
+export default function Profile({ setPage }) {
   return (
     <>
       {/* Main Container */}
@@ -71,12 +71,18 @@ export default function Profile() {
               </div>
 
               <div className="p-3">
-                <button className="btn btn-action w-100 mb-2">
+                <button 
+                  className="btn btn-action w-100 mb-2"
+                  onClick={() => setPage("Reports")}
+                >
                   <i className="bi bi-plus-circle me-2"></i>
                   Submit a Report
                 </button>
 
-                <button className="btn btn-action w-100 mb-2">
+                <button 
+                  className="btn btn-action w-100 mb-2"
+                  onClick={() => setPage("FindYourRoom")}
+                >
                   <i className="bi bi-search me-2"></i>
                   Find a Classroom
                 </button>
