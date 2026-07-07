@@ -28,18 +28,19 @@ async function MongoConnect() {
 
 
 
-app.get("/report", async (req, res) => {
+app.get("/api/report", async (req, res) => {
     try {
         const report = await reportsCollection.find().toArray();
 
         res.json(report);
+        console.log(report);
     } catch (err) {
         res.status(500).json({
             error: err.message
         });
     }
 });
-app.post("/report", async (req, res) => {
+app.post("/api/report", async (req, res) => {
     try {
         const result = await reportsCollection.insertOne(req.body);
 
@@ -48,20 +49,21 @@ app.post("/report", async (req, res) => {
             insertedId: result.insertedId
         });
 
+        console.log(result);
     } catch (err) {
         res.status(500).json({
             error: err.message
         });
     }
 });
-app.delete("/report/:id", async (req, res) => {
+app.delete("/api/report/:id", async (req, res) => {
     try {
         const result = await reportsCollection.deleteOne({
             _id: new ObjectId(req.params.id)
         });
 
         res.json(result);
-
+        console.log(result);
     } catch (err) {
         res.status(500).json({
             error: err.message
@@ -72,7 +74,7 @@ app.delete("/report/:id", async (req, res) => {
 
 
 
-app.get("/profile", async (req, res) => {
+app.get("/api/profile", async (req, res) => {
     try {
         const profiles = await profilesCollection.findOne({
             username: req.body.username,
@@ -94,7 +96,7 @@ app.get("/profile", async (req, res) => {
         });
     }
 });
-app.post("/profile", async (req, res) => {
+app.post("/api/profile", async (req, res) => {
     try {
         const result = await profilesCollection.insertOne(req.body);
 
@@ -109,7 +111,7 @@ app.post("/profile", async (req, res) => {
         });
     }
 });
-app.delete("/profile", async (req, res) => {
+app.delete("/api/profile", async (req, res) => {
     try {
         const result = await profilesCollection.deleteOne({
             username: req.body.username,

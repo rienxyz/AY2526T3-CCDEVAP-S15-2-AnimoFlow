@@ -16,6 +16,23 @@ export default function Reports() {
     queueLength: ""
   })
 
+  const submitReport = async () => {
+    try {
+      console.log("Submitting...", report);
+      const response = await fetch("/api/report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(report),
+      });
+
+      const result = await response.json();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <>
       <div className="main-container">
@@ -167,6 +184,7 @@ export default function Reports() {
                     type="submit"
                     className="btn btn-submit w-100"
                     id="submitBtn"
+                    onClick={submitReport}
                   >
                     <i className="bi bi-send me-2"></i>
                     Submit Report
