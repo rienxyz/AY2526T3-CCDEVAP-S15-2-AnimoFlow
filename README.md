@@ -18,18 +18,14 @@ Before running the project, make sure you have the following installed:
 
 ---
 
-## Installation
-
-Install the project dependencies:
-
-```bash
-npm install
-```
-
 Start the frontend development:
 
 ```bash
 cd Frontend
+```
+
+```bash
+npm install
 ```
 
 ```bash
@@ -42,6 +38,12 @@ Start the backend development:
 cd Backend
 ```
 
+```bash
+npm install
+```
+```bash
+docker compose up -d
+```
 ```bash
 node server.js
 ```
