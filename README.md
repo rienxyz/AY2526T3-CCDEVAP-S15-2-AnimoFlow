@@ -22,13 +22,7 @@ Start the frontend development:
 
 ```bash
 cd Frontend
-```
-
-```bash
 npm install
-```
-
-```bash
 npm run dev
 ```
 
@@ -36,15 +30,8 @@ Start the backend development:
 
 ```bash
 cd Backend
-```
-
-```bash
 npm install
-```
-```bash
 docker compose up -d
-```
-```bash
 node server.js
 ```
 
