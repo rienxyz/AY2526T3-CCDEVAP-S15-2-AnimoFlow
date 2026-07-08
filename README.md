@@ -18,18 +18,21 @@ Before running the project, make sure you have the following installed:
 
 ---
 
-## Installation
-
-Install the project dependencies:
+Start the frontend development:
 
 ```bash
+cd Frontend
 npm install
+npm run dev
 ```
 
-Start the development server:
+Start the backend development:
 
 ```bash
-npm run dev
+cd Backend
+npm install
+docker compose up -d
+node server.js
 ```
 
 ---
@@ -53,14 +56,6 @@ docker compose ps
 MongoDB credentials (username and password) are already configured in the project's Docker Compose configuration.
 
 ---
-
-## Development
-
-To start the project after installing dependencies:
-
-```bash
-npm run dev
-```
 
 If both the frontend and backend are included in the project, ensure the MongoDB container is running before starting the application.
 
