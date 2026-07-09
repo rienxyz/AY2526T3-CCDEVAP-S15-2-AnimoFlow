@@ -4,7 +4,6 @@
 
 - MongoDB
 - Express.js
-- React
 - Node.js
 
 ---
@@ -17,14 +16,6 @@ Before running the project, make sure you have the following installed:
 - Docker (with Docker Compose)
 
 ---
-
-Start the frontend development:
-
-```bash
-cd Frontend
-npm install
-npm run dev
-```
 
 Start the backend development:
 
