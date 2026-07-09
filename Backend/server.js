@@ -39,7 +39,11 @@ async function MongoConnect() {
 
 app.get("/api/report", async (req, res) => {
     try {
-        const report = await reportsCollection.find().toArray();
+        const report = await reportsCollection.find({
+            timestamp: {
+                $gte: Date.now() - 1800000
+            }
+        }).toArray();
 
         res.json(report);
         console.log(report);

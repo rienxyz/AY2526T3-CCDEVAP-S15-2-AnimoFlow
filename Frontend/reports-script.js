@@ -73,22 +73,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== Load Reports from localStorage ==========
     async function loadReports() {
         try {
-            // Fetch reports from backend
             const response = await fetch("http://localhost:3999/api/report");
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch reports");
+            }
+
             const reports = await response.json();
-
-            const THIRTY_MINUTES = 30 * 60 * 1000;
-            const now = Date.now();
-
-            // Filter reports from last 30 minutes
-            const activeReports = reports.filter(
-                report => (now - report.timestamp) <= THIRTY_MINUTES
-            );
-
-            // Group by building + elevator (keep latest report only)
             const latestReportsMap = new Map();
 
-            activeReports.forEach(report => {
+            reports.forEach(report => {
                 const key = `${report.building}|${report.elevator}`;
 
                 if (
@@ -101,10 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const latestReports = Array.from(latestReportsMap.values());
 
-            // Sort newest first
             latestReports.sort((a, b) => b.timestamp - a.timestamp);
 
-            // Empty state
             if (latestReports.length === 0) {
                 reportsList.innerHTML = `
                     <div id="emptyState" class="text-center p-5 text-muted">
@@ -116,25 +108,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             let html = "";
-
             latestReports.forEach(report => {
-                let badgeClass = "";
-                let badgeText = "";
+                const badges = {
+                    short: {
+                        class: "short",
+                        text: "🟢 Short"
+                    },
+                    medium: {
+                        class: "medium",
+                        text: "🟡 Medium"
+                    },
+                    long: {
+                        class: "long",
+                        text: "🔴 Long"
+                    }
+                };
 
-                switch (report.queueLength) {
-                    case "short":
-                        badgeClass = "short";
-                        badgeText = "🟢 Short";
-                        break;
-                    case "medium":
-                        badgeClass = "medium";
-                        badgeText = "🟡 Medium";
-                        break;
-                    case "long":
-                        badgeClass = "long";
-                        badgeText = "🔴 Long";
-                        break;
-                }
+                const badge = badges[report.queueLength] ?? {
+                    class: "",
+                    text: report.queueLength
+                };
 
                 html += `
                     <div class="report-card">
@@ -144,12 +137,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
 
                         <div class="report-elevator">
-                            <i class="bi bi-elevator"></i> ${escapeHtml(report.elevator)}
+                            <i class="bi bi-elevator"></i>${escapeHtml(report.elevator)}
                         </div>
 
                         <div>
-                            <span class="queue-badge ${badgeClass}">
-                                ${badgeText}
+                            <span class="queue-badge ${badge.class}">
+                                ${badge.text}
                             </span>
                         </div>
                     </div>
