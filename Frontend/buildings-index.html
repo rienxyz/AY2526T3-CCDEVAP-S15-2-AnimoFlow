@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" type="text/css" media="all" href="buildings-style.css">
+    <meta charset="UTF-8">
+    <title>AnimoFlow · Buildings</title>
+</head>
+
+<body>
+    <div class="container py-4">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <h1><i class="bi bi-building me-2"></i>Buildings</h1>
+            <p class="text-muted">Explore DLSU campus buildings and their information.</p>
+        </div>
+
+        <!-- Building Selection Card -->
+        <div class="card-custom">
+            <div class="card-header-custom">
+                <i class="bi bi-grid-3x3-gap-fill me-2"></i>Select a Building
+            </div>
+            <div class="p-4">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-success">Choose a building:</label>
+                        <select name="buildings" id="buildings" class="form-select form-select-lg">
+                            <option value="LS">St. La Salle Hall</option>
+                            <option value="G">John Gokongwei Sr. Hall</option>
+                            <option value="HS">Henry Sy Sr. Hall</option>
+                            <option value="Y">Don Enrique T. Yuchencho Hall</option>
+                            <option value="M">St. Miguel Febres Cordero Hall</option>
+                            <option value="V">Urbano J. Velasco Hall</option>
+                            <option value="J">St. Joseph Hall</option>
+                            <option value="A">Br. Andrew Gonzalez Building</option>
+                            <option value="ER">Enrique M. Razon Sports Center</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary btn-lg w-100" id="confi">
+                            <i class="bi bi-eye me-2"></i>View Building Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Building Info Card -->
+        <div class="card-custom mt-4" id="infodisp" style="display: none;">
+            <div class="card-header-custom">
+                <i class="bi bi-info-circle me-2"></i>Building Information
+            </div>
+            <div class="p-4 text-center">
+                <img src="" 
+                    class="img-fluid rounded border border-success p-1 mb-3"
+                    style="max-height: 350px; width: auto;"
+                    alt=""
+                    id="bPhoto">
+                <p class="text-secondary text-start" id="text">Placeholder text for building info</p>
+                <button class="btn btn-outline-secondary mt-2" id="clea">
+                    <i class="bi bi-arrow-counterclockwise me-2"></i>Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="buildings-script.js"></script>
+</body>
+</html>

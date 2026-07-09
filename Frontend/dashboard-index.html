@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimoFlow · Dashboard</title>
+    <!-- Google Fonts + Bootstrap Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Dashboard Styles -->
+    <link rel="stylesheet" href="dashboard-style.css">
+</head>
+<body>
+
+    <!-- ===== SIDEBAR TOGGLE (mobile) ===== -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- ===== OVERLAY ===== -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-icon">
+                <i class="bi bi-bar-chart-steps"></i>
+            </div>
+            <span class="brand-text">AnimoFlow</span>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li>
+                <a href="#" class="active" data-page="dashboard">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="#" data-page="reports">
+                    <i class="bi bi-file-text"></i> Reports
+                </a>
+            </li>
+            <li>
+                <a href="#" data-page="queue">
+                    <i class="bi bi-bar-chart-line"></i> Queue Tracker
+                </a>
+            </li>
+            <li>
+                <a href="#" data-page="findroom">
+                    <i class="bi bi-search"></i> Find Your Room
+                </a>
+            </li>
+            <li>
+                <a href="#" data-page="buildings">
+                    <i class="bi bi-building"></i> Buildings
+                </a>
+            </li>
+            <li>
+                <a href="#" data-page="profile">
+                    <i class="bi bi-person"></i> Profile
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div>
+                    <div class="user-name" id="sidebarUserName">Guest User</div>
+                    <div class="user-email" id="sidebarUserEmail">guest@animoflow.local</div>
+                </div>
+            </div>
+            <a href="#" class="logout-link" id="sidebarLogout">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <!-- ===== DASHBOARD PAGE ===== -->
+        <section class="page-section active" id="page-dashboard">
+            <div class="container-fluid px-0">
+                <h1 class="text-success mb-3"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h1>
+                <p class="text-muted mb-4">Welcome to AnimoFlow — Real-time elevator queue and campus navigation for the DLSU community.</p>
+
+                <!-- Dashboard Cards -->
+                <div class="row g-4">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body text-center">
+                                <div class="display-6 text-success"><i class="bi bi-elevator"></i></div>
+                                <h5 class="card-title mt-2">Active Reports</h5>
+                                <p class="display-5 fw-bold text-success" id="dashActiveReports">0</p>
+                                <small class="text-muted">Last 30 minutes</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body text-center">
+                                <div class="display-6 text-warning"><i class="bi bi-building"></i></div>
+                                <h5 class="card-title mt-2">Buildings</h5>
+                                <p class="display-5 fw-bold text-warning">10</p>
+                                <small class="text-muted">Across DLSU Campus</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body text-center">
+                                <div class="display-6 text-danger"><i class="bi bi-people-fill"></i></div>
+                                <h5 class="card-title mt-2">Heavy Traffic</h5>
+                                <p class="display-5 fw-bold text-danger" id="dashHeavyTraffic">0</p>
+                                <small class="text-muted">Buildings with long queues</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body text-center">
+                                <div class="display-6 text-info"><i class="bi bi-clock-history"></i></div>
+                                <h5 class="card-title mt-2">Your Reports</h5>
+                                <p class="display-5 fw-bold text-info" id="dashYourReports">0</p>
+                                <small class="text-muted">Total contributed</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Preview -->
+                <div class="card border-0 shadow-sm rounded-4 mt-4">
+                    <div class="card-header bg-transparent border-0 py-3">
+                        <h5 class="mb-0 text-success"><i class="bi bi-clock-history me-2"></i>Recent Activity</h5>
+                    </div>
+                    <div class="card-body" id="dashActivityList">
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No recent activity. Submit a report to get started!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== REPORTS PAGE ===== -->
+        <section class="page-section" id="page-reports">
+            <div id="reportsContent"></div>
+        </section>
+
+        <!-- ===== QUEUE TRACKER PAGE ===== -->
+        <section class="page-section" id="page-queue">
+            <div id="queueContent"></div>
+        </section>
+
+        <!-- ===== FIND YOUR ROOM PAGE ===== -->
+        <section class="page-section" id="page-findroom">
+            <div id="findroomContent"></div>
+        </section>
+
+        <!-- ===== BUILDINGS PAGE ===== -->
+        <section class="page-section" id="page-buildings">
+            <div id="buildingsContent"></div>
+        </section>
+
+        <!-- ===== PROFILE PAGE ===== -->
+        <section class="page-section" id="page-profile">
+            <div id="profileContent"></div>
+        </section>
+
+    </main>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast align-items-center border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">Notification message</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+        <!-- ===== DARK MODE TOGGLE BUTTON ===== -->
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+        🌙
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="dashboard-script.js"></script>
+</body>
+</html>
