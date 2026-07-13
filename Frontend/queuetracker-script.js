@@ -73,32 +73,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ========== Load Queue Data ==========
-    function loadQueueData() {
-        const reports = JSON.parse(localStorage.getItem('animoflow_reports') || '[]');
-        const THIRTY_MINUTES = 30 * 60 * 1000;
-        const now = Date.now();
-        
-        // Filter reports from last 30 minutes
-        const activeReports = reports.filter(report => (now - report.timestamp) <= THIRTY_MINUTES);
-        
-        // Group by elevator to show latest only
-        const latestReportsMap = new Map();
-        activeReports.forEach(report => {
-            const key = `${report.building}|${report.elevator}`;
-            if (!latestReportsMap.has(key) || report.timestamp > latestReportsMap.get(key).timestamp) {
-                latestReportsMap.set(key, report);
-            }
-        });
-        
-        const latestReports = Array.from(latestReportsMap.values());
-        // Sort by timestamp descending (newest first)
-        latestReports.sort((a, b) => b.timestamp - a.timestamp);
-        
-        // Update building overview cards
-        updateBuildingCards(latestReports);
-        
-        // Update queue table
-        updateQueueTable(latestReports);
+    async function loadQueueData() {
+        try {
+            const response = await fetch("http://localhost:3999/api/report");
+            const activeReports = await response.json();
+            
+            // Group by elevator to show latest only
+            const latestReportsMap = new Map();
+            activeReports.forEach(report => {
+                const key = `${report.building}|${report.elevator}`;
+                if (!latestReportsMap.has(key) || report.timestamp > latestReportsMap.get(key).timestamp) {
+                    latestReportsMap.set(key, report);
+                }
+            });
+            
+            const latestReports = Array.from(latestReportsMap.values());
+            // Sort by timestamp descending (newest first)
+            latestReports.sort((a, b) => b.timestamp - a.timestamp);
+            
+            // Update building overview cards
+            updateBuildingCards(latestReports);
+            
+            // Update queue table
+            updateQueueTable(latestReports);
+        } catch(err) {
+            console.error(err);
+        }
     }
     
     // ========== Update Building Cards ==========
@@ -254,49 +254,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ========== Apply Filter ==========
-    function applyFilter() {
-        const buildingFilter = document.getElementById('filterBuilding').value;
-        const statusFilter = document.getElementById('filterStatus').value;
-        
-        const reports = JSON.parse(localStorage.getItem('animoflow_reports') || '[]');
-        const THIRTY_MINUTES = 30 * 60 * 1000;
-        const now = Date.now();
-        
-        let filtered = reports.filter(report => (now - report.timestamp) <= THIRTY_MINUTES);
-        
-        // Apply building filter
-        if (buildingFilter !== 'all') {
-            filtered = filtered.filter(r => r.building === buildingFilter);
-        }
-        
-        // Apply status filter
-        if (statusFilter !== 'all') {
-            filtered = filtered.filter(r => r.queueLength === statusFilter);
-        }
-        
-        // Group by elevator to show latest only
-        const latestReportsMap = new Map();
-        filtered.forEach(report => {
-            const key = `${report.building}|${report.elevator}`;
-            if (!latestReportsMap.has(key) || report.timestamp > latestReportsMap.get(key).timestamp) {
-                latestReportsMap.set(key, report);
+    async function applyFilter() {
+        try {
+            const buildingFilter = document.getElementById('filterBuilding').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            const response = await fetch("http://localhost:3999/api/report");
+            let filtered = await response.json();
+            
+            // Apply building filter
+            if (buildingFilter !== 'all') {
+                filtered = filtered.filter(r => r.building === buildingFilter);
             }
-        });
-        
-        const latestReports = Array.from(latestReportsMap.values());
-        latestReports.sort((a, b) => b.timestamp - a.timestamp);
-        
-        // Update building cards (showing filtered data)
-        updateBuildingCards(latestReports);
-        
-        // Update table
-        updateQueueTable(latestReports);
-        
-        // Close filter dropdown
-        const dropdown = document.getElementById('filterDropdown');
-        if (dropdown) dropdown.classList.remove('show');
-        
-        showToast('Filter applied!', 'info');
+            
+            // Apply status filter
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(r => r.queueLength === statusFilter);
+            }
+            
+            // Group by elevator to show latest only
+            const latestReportsMap = new Map();
+            filtered.forEach(report => {
+                const key = `${report.building}|${report.elevator}`;
+                if (!latestReportsMap.has(key) || report.timestamp > latestReportsMap.get(key).timestamp) {
+                    latestReportsMap.set(key, report);
+                }
+            });
+            
+            const latestReports = Array.from(latestReportsMap.values());
+            latestReports.sort((a, b) => b.timestamp - a.timestamp);
+            
+            // Update building cards (showing filtered data)
+            updateBuildingCards(latestReports);
+            
+            // Update table
+            updateQueueTable(latestReports);
+            
+            // Close filter dropdown
+            const dropdown = document.getElementById('filterDropdown');
+            if (dropdown) dropdown.classList.remove('show');
+            
+            showToast('Filter applied!', 'info');
+        } catch(err) {
+            console.error(err);
+        }
     }
     
     // ========== Clear Filter ==========

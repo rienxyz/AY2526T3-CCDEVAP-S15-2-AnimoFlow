@@ -11,9 +11,8 @@ app.use(express.json());
 // cors
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     res.header("Access-Control-Allow-Headers", "Content-Type");
-
     next();
 });
 
@@ -53,17 +52,14 @@ app.get("/api/report", async (req, res) => {
         });
     }
 });
-app.get("/api/report/heavyqueues", async (req, res) => {
+app.get("/api/report/:user", async (req, res) => {
     try {
-        const report = await reportsCollection.find({
-            timestamp: {        //Only get reports created less than or equal to 30 min
-                $gte: Date.now() - 1800000
-            },
-            queueLength: "long"
+        const result = await reportsCollection.find({
+            userId: req.params.user
         }).toArray();
 
-        res.json(report);
-        console.log(report);
+        res.json(result);
+        console.log(result);
     } catch (err) {
         res.status(500).json({
             error: err.message
@@ -72,14 +68,35 @@ app.get("/api/report/heavyqueues", async (req, res) => {
 });
 app.post("/api/report", async (req, res) => {
     try {
-        const result = await reportsCollection.insertOne(req.body);
+        const report = req.body;
 
-        res.status(201).json({
-            message: "Report received!",
-            insertedId: result.insertedId
+        // Validate fields
+        if (
+            typeof report.building !== "string" ||
+            typeof report.elevator !== "string" ||
+            typeof report.queueLength !== "string" ||
+            typeof report.userId !== "string" ||
+            report.building.trim() === "" ||
+            report.elevator.trim() === "" ||
+            report.userId.trim() === "" ||
+            !["short", "medium", "long"].includes(report.queueLength)
+        ) {
+            return res.status(400).json({
+                error: "Invalid report format."
+            });
+        }
+
+        const result = await reportsCollection.insertOne({
+            id: crypto.randomUUID(),
+            building: report.building,
+            elevator: report.elevator,
+            queueLength: report.queueLength,
+            timestamp: Date.now(),
+            userId: report.userId
         });
 
-        console.log(result);
+        res.status(201).json(result);
+
     } catch (err) {
         res.status(500).json({
             error: err.message
@@ -104,7 +121,7 @@ app.delete("/api/report/:id", async (req, res) => {
 
 
 
-app.get("/api/profile", async (req, res) => {
+app.get("/api/auth", async (req, res) => {
     try {
         const profiles = await profilesCollection.findOne({
             username: req.body.username,
@@ -117,6 +134,7 @@ app.get("/api/profile", async (req, res) => {
             res.json({
                 username: profiles.username,
                 email: profiles.email,
+                role: profiles.role,
                 image: profiles.image,
             });
         }
@@ -126,7 +144,7 @@ app.get("/api/profile", async (req, res) => {
         });
     }
 });
-app.post("/api/profile", async (req, res) => {
+app.post("/api/register", async (req, res) => {
     try {
         const result = await profilesCollection.insertOne(req.body);
 

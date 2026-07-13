@@ -194,14 +194,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Create report object
-        const newReport = {
-            id: Date.now(),
+        const newReport = { 
             building: building,
             elevator: elevator,
             queueLength: queueLength,
-            timestamp: Date.now(),
-            userId: 'current_user' // TODO: Replace with actual logged-in user
+            userId: 'guest' // Replace with actual logged-in user
         };
         
         // Save to MongoDB via API
