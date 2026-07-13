@@ -85,10 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
             reports.forEach(report => {
                 const key = `${report.building}|${report.elevator}`;
 
-                if (
-                    !latestReportsMap.has(key) ||
-                    report.timestamp > latestReportsMap.get(key).timestamp
-                ) {
+                if (!latestReportsMap.has(key) || report.timestamp > latestReportsMap.get(key).timestamp) {
                     latestReportsMap.set(key, report);
                 }
             });

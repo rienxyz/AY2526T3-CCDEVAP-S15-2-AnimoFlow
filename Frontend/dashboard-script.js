@@ -156,67 +156,69 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ===== DASHBOARD DATA =====
-    function updateDashboard() {
-        const reports = JSON.parse(localStorage.getItem('animoflow_reports') || '[]');
-        const THIRTY_MINUTES = 30 * 60 * 1000;
-        const now = Date.now();
-        const activeReports = reports.filter(r => (now - r.timestamp) <= THIRTY_MINUTES);
+    async function updateDashboard() {
+        try {
+            const response = await fetch("http://localhost:3999/api/report");
+            const activeReports = await response.json();
 
-        const activeReportsEl = document.getElementById('dashActiveReports');
-        if (activeReportsEl) activeReportsEl.textContent = activeReports.length;
+            const activeReportsEl = document.getElementById('dashActiveReports');
+            activeReportsEl.textContent = activeReports.length; // <-- Line 176
 
-        const longQueues = activeReports.filter(r => r.queueLength === 'long');
-        const buildingsWithLong = new Set(longQueues.map(r => r.building));
-        const heavyTrafficEl = document.getElementById('dashHeavyTraffic');
-        if (heavyTrafficEl) heavyTrafficEl.textContent = buildingsWithLong.size;
+            const longQueues = activeReports.filter(r => r.queueLength === 'long');
+            const buildingsWithLong = new Set(longQueues.map(r => r.building));
+            const heavyTrafficEl = document.getElementById('dashHeavyTraffic');
+            if (heavyTrafficEl) heavyTrafficEl.textContent = buildingsWithLong.size;
 
-        let userData = localStorage.getItem('animoflow_user');
-        let userEmail = null;
-        if (userData) {
-            try {
-                const user = JSON.parse(userData);
-                userEmail = user.email;
-            } catch (e) {}
-        }
-        let userReports = [];
-        if (userEmail && userEmail !== 'guest_user') {
-            userReports = reports.filter(r => r.userId === userEmail);
-        } else {
-            userReports = reports;
-        }
-        const yourReportsEl = document.getElementById('dashYourReports');
-        if (yourReportsEl) yourReportsEl.textContent = userReports.length;
-
-        const recent = activeReports.sort((a, b) => b.timestamp - a.timestamp).slice(0, 5);
-        const activityList = document.getElementById('dashActivityList');
-
-        if (activityList) {
-            if (recent.length === 0) {
-                activityList.innerHTML = `
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-                        <p class="mt-2">No recent activity. Submit a report to get started!</p>
-                    </div>
-                `;
+            let userData = localStorage.getItem('animoflow_user');
+            let userEmail = null;
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    userEmail = user.email;
+                } catch (e) {}
+            }
+            let userReports = [];
+            if (userEmail && userEmail !== 'guest_user') {
+                userReports = reports.filter(r => r.userId === userEmail);
             } else {
-                let html = '';
-                recent.forEach(r => {
-                    const mins = Math.floor((now - r.timestamp) / 60000);
-                    const timeAgo = mins < 1 ? 'Just now' : mins + 'm ago';
-                    let emoji = r.queueLength === 'short' ? '🟢' : r.queueLength === 'medium' ? '🟡' : '🔴';
-                    html += `
-                        <div class="d-flex align-items-center py-2 border-bottom">
-                            <span class="me-2">${emoji}</span>
-                            <div class="flex-grow-1">
-                                <strong>${r.building}</strong> · ${r.elevator}
-                                <span class="badge bg-light text-dark ms-2">${r.queueLength}</span>
-                            </div>
-                            <small class="text-muted">${timeAgo}</small>
+                userReports = reports;
+            }
+            const yourReportsEl = document.getElementById('dashYourReports');
+            if (yourReportsEl) yourReportsEl.textContent = userReports.length;
+
+            const recent = activeReports.sort((a, b) => b.timestamp - a.timestamp).slice(0, 5);
+            const activityList = document.getElementById('dashActivityList');
+
+            if (activityList) {
+                if (recent.length === 0) {
+                    activityList.innerHTML = `
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No recent activity. Submit a report to get started!</p>
                         </div>
                     `;
-                });
-                activityList.innerHTML = html;
+                } else {
+                    let html = '';
+                    recent.forEach(r => {
+                        const mins = Math.floor((now - r.timestamp) / 60000);
+                        const timeAgo = mins < 1 ? 'Just now' : mins + 'm ago';
+                        let emoji = r.queueLength === 'short' ? '🟢' : r.queueLength === 'medium' ? '🟡' : '🔴';
+                        html += `
+                            <div class="d-flex align-items-center py-2 border-bottom">
+                                <span class="me-2">${emoji}</span>
+                                <div class="flex-grow-1">
+                                    <strong>${r.building}</strong> · ${r.elevator}
+                                    <span class="badge bg-light text-dark ms-2">${r.queueLength}</span>
+                                </div>
+                                <small class="text-muted">${timeAgo}</small>
+                            </div>
+                        `;
+                    });
+                    activityList.innerHTML = html;
+                }
             }
+        } catch(err) {
+            console.error(err);
         }
     }
 

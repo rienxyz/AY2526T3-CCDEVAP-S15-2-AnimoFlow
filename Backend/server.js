@@ -40,9 +40,26 @@ async function MongoConnect() {
 app.get("/api/report", async (req, res) => {
     try {
         const report = await reportsCollection.find({
-            timestamp: {
+            timestamp: {        //Only get reports created less than or equal to 30 min
                 $gte: Date.now() - 1800000
             }
+        }).toArray();
+
+        res.json(report);
+        console.log(report);
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
+});
+app.get("/api/report/heavyqueues", async (req, res) => {
+    try {
+        const report = await reportsCollection.find({
+            timestamp: {        //Only get reports created less than or equal to 30 min
+                $gte: Date.now() - 1800000
+            },
+            queueLength: "long"
         }).toArray();
 
         res.json(report);
