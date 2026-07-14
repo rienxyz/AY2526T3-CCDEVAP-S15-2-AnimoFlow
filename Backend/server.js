@@ -6,6 +6,8 @@ const dbclient = new MongoClient(uri);
 const app = express();
 const PORT = 3999;
 
+const path = require("path");
+
 app.use(express.json());
 
 // cors
@@ -26,6 +28,7 @@ async function MongoConnect() {
 
         reportsCollection = db.collection("reports");
         profilesCollection = db.collection("profiles");
+        directionsCollection = db.collection("directions"); //find your room
 
     } catch (err) {
         console.error("MongoDB Error:", err);
@@ -33,8 +36,50 @@ async function MongoConnect() {
     }
 }
 
+app.use(express.static(path.join(__dirname, "../Frontend")));
+//find your room
+app.get("/api/direction", async (req, res) => {
+    try {
+        const building = req.query.building;
+        const gate = req.query.gate;
 
+        if (!building || !gate) {
+            return res.status(400).json({ error: "building and gate are required." });
+        }
 
+        const direction = await directionsCollection.findOne({ building, gate });
+
+        if (!direction) {
+            return res.status(404).json({ error: "No photo saved for this building/gate yet." });
+        }
+
+        res.json({
+            image: direction.image
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+// find your room
+app.post("/api/direction", async (req, res) => {
+    try {
+        const { building, gate, image } = req.body;
+
+        if (!building || !gate) {
+            return res.status(400).json({ error: "building and gate are required." });
+        }
+
+        const result = await directionsCollection.updateOne(
+            { building, gate },
+            { $set: { building, gate, image: image || null } },
+            { upsert: true }
+        );
+
+        res.status(201).json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 app.get("/api/report", async (req, res) => {
     try {
