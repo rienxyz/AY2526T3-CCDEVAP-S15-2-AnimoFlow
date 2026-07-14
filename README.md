@@ -23,6 +23,7 @@ Start the backend development:
 cd Backend
 npm install
 docker compose up -d
+node seed-directions.js
 node server.js
 ```
 
