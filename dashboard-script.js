@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem('animoflow_user');
         showToast('Logged out successfully!', 'info');
         setTimeout(() => {
-            window.location.href = 'login-index.html';
+            window.location.href = 'index.html';
         }, 500);
     });
 
