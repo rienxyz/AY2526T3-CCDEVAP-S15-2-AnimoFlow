@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require("express");
 const path = require("path");
-const { connectDB } = require("./src/config/database");
+const { connectDB, getDB } = require("./src/config/database");
+const crypto = require("crypto");
 
 // Import routes
 const authRoutes = require("./src/routes/authRoutes");
@@ -24,7 +25,6 @@ app.use((req, res, next) => {
 });
 
 // ==================== SERVE STATIC FILES ====================
-// Serve static frontend files (CSS, JS, Images)
 app.use(express.static(path.join(__dirname, "../Frontend")));
 
 // ==================== API ROUTES ====================
@@ -34,7 +34,6 @@ app.use("/api/direction", directionRoutes);
 app.use("/api/admin", adminRoutes);
 
 // ==================== FRONTEND ROUTES ====================
-// Explicitly define routes for each HTML page (no wildcards)
 const frontendPages = [
     'login-index.html',
     'dashboard-index.html',
