@@ -1,258 +1,69 @@
-const { MongoClient, ObjectId } = require("mongodb");
+require('dotenv').config();
 const express = require("express");
-
-const uri = "mongodb://admin:password@localhost:27017/?authSource=admin";
-const dbclient = new MongoClient(uri);
-const app = express();
-const PORT = 3999;
-
 const path = require("path");
+const { connectDB } = require("./src/config/database");
 
+// Import routes
+const authRoutes = require("./src/routes/authRoutes");
+const reportRoutes = require("./src/routes/reportRoutes");
+const directionRoutes = require("./src/routes/directionRoutes");
+const adminRoutes = require("./src/routes/adminRoutes");
+
+const app = express();
+const PORT = process.env.PORT || 3999;
+
+// Middleware
 app.use(express.json());
 
-// cors
+// CORS
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     next();
 });
 
-async function MongoConnect() {
-    try {
-        await dbclient.connect();
-
-        console.log("Connected to MongoDB");
-
-        const db = dbclient.db("Main");
-
-        reportsCollection = db.collection("reports");
-        profilesCollection = db.collection("profiles");
-        directionsCollection = db.collection("directions"); //find your room
-
-    } catch (err) {
-        console.error("MongoDB Error:", err);
-        process.exit(1);
-    }
-}
-
+// ==================== SERVE STATIC FILES ====================
+// Serve static frontend files (CSS, JS, Images)
 app.use(express.static(path.join(__dirname, "../Frontend")));
-//find your room
-app.get("/api/direction", async (req, res) => {
-    try {
-        const building = req.query.building;
-        const gate = req.query.gate;
 
-        if (!building || !gate) {
-            return res.status(400).json({ error: "building and gate are required." });
-        }
+// ==================== API ROUTES ====================
+app.use("/api/auth", authRoutes);
+app.use("/api/report", reportRoutes);
+app.use("/api/direction", directionRoutes);
+app.use("/api/admin", adminRoutes);
 
-        const direction = await directionsCollection.findOne({ building, gate });
+// ==================== FRONTEND ROUTES ====================
+// Explicitly define routes for each HTML page (no wildcards)
+const frontendPages = [
+    'login-index.html',
+    'dashboard-index.html',
+    'reports.html',
+    'queuetracker.html',
+    'find-your-room.html',
+    'buildings-index.html',
+    'map-index.html',
+    'profile.html',
+    'admin.html',
+    'admin-login.html'
+];
 
-        if (!direction) {
-            return res.status(404).json({ error: "No photo saved for this building/gate yet." });
-        }
-
-        res.json({
-            image: direction.image
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-// find your room
-app.post("/api/direction", async (req, res) => {
-    try {
-        const { building, gate, image } = req.body;
-
-        if (!building || !gate) {
-            return res.status(400).json({ error: "building and gate are required." });
-        }
-
-        const result = await directionsCollection.updateOne(
-            { building, gate },
-            { $set: { building, gate, image: image || null } },
-            { upsert: true }
-        );
-
-        res.status(201).json(result);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+frontendPages.forEach(page => {
+    app.get(`/${page}`, (req, res) => {
+        res.sendFile(path.join(__dirname, "../Frontend", page));
+    });
 });
 
-app.get("/api/report", async (req, res) => {
-    try {
-        const report = await reportsCollection.find({
-            timestamp: {        //Only get reports created less than or equal to 30 min
-                $gte: Date.now() - 1800000
-            }
-        }).toArray();
-
-        res.json(report);
-        console.log(report);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-app.get("/api/report/:user", async (req, res) => {
-    try {
-        const result = await reportsCollection.find({
-            userId: req.params.user
-        }).toArray();
-
-        res.json(result);
-        console.log(result);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-app.post("/api/report", async (req, res) => {
-    try {
-        const report = req.body;
-
-        // Validate fields
-        if (
-            typeof report.building !== "string" ||
-            typeof report.elevator !== "string" ||
-            typeof report.queueLength !== "string" ||
-            typeof report.userId !== "string" ||
-            report.building.trim() === "" ||
-            report.elevator.trim() === "" ||
-            report.userId.trim() === "" ||
-            !["short", "medium", "long"].includes(report.queueLength)
-        ) {
-            return res.status(400).json({
-                error: "Invalid report format."
-            });
-        }
-
-        const result = await reportsCollection.insertOne({
-            id: crypto.randomUUID(),
-            building: report.building,
-            elevator: report.elevator,
-            queueLength: report.queueLength,
-            timestamp: Date.now(),
-            userId: report.userId
-        });
-
-        res.status(201).json(result);
-
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-
-//for admin
-app.delete("/api/report/:id", async (req, res) => {
-    try {
-        const result = await reportsCollection.deleteOne({
-            id: req.params.id
-        });
-
-        res.json(result);
-        console.log(result);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-app.delete("/api/report/:building", async (req, res) => {
-    try {
-        const result = await reportsCollection.deleteOne({
-            building: req.params.building
-        });
-
-        res.json(result);
-        console.log(result);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-app.delete("/api/report/:queueLength", async (req, res) => {
-    try {
-        const result = await reportsCollection.deleteOne({
-            queueLength: req.params.queueLength
-        });
-
-        res.json(result);
-        console.log(result);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-app.delete("/api/report/:userId", async (req, res) => {
-    try {
-        const result = await reportsCollection.deleteOne({
-            userId: req.params.userId
-        });
-
-        res.json(result);
-        console.log(result);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-
-app.get("/api/report/:building", async (req, res) => {
-    try {
-        const result = await reportsCollection.find({
-            building: req.params.building
-        }).toArray();
-
-        res.json(result);
-        console.log(result);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-app.get("/api/report/:queueLength", async (req, res) => {
-    try {
-        const result = await reportsCollection.find({
-            queueLength: req.params.queueLength
-        }).toArray();
-
-        res.json(result);
-        console.log(result);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-app.get("/api/report/all", async (req, res) => {
-    try {
-        const report = await reportsCollection.find().toArray();
-        res.json(report);
-        console.log(report);
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-
-async function StartServer() {
-    await MongoConnect();
-
+// ==================== START SERVER ====================
+async function startServer() {
+    await connectDB();
+    
     app.listen(PORT, () => {
-        console.log(`Running on http://localhost:${PORT}`);
+        console.log(`\n🚀 Server running on http://localhost:${PORT}`);
+        console.log(`📋 Admin credentials: admin@dlsu.edu.ph / admin123`);
+        console.log(`🔗 Login page: http://localhost:${PORT}/login-index.html`);
+        console.log(`🔗 Admin panel: http://localhost:${PORT}/admin-login.html\n`);
     });
 }
 
-StartServer();
+startServer();
