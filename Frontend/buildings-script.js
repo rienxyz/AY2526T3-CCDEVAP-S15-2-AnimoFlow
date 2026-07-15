@@ -1,3 +1,35 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // ===== DARK MODE TOGGLE =====
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('animoflow_darkmode', isDark ? 'dark' : 'light');
+        if (darkModeToggle) {
+            darkModeToggle.textContent = isDark ? '☀️' : '🌙';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('animoflow_darkmode');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (darkModeToggle) darkModeToggle.textContent = '☀️';
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
+
+    // ===== BACK TO DASHBOARD =====
+    const backBtn = document.getElementById('backToDashboardBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            window.location.href = 'dashboard-index.html';
+        });
+    }
+});
+
 const bDisp = document.getElementById('infodisp');
 const confirm = document.getElementById('confi');
 const clear = document.getElementById('clea');

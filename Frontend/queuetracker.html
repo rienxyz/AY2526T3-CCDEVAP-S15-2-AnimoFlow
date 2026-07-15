@@ -4,28 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AnimoFlow · Queue Tracker</title>
-    <!-- Google Fonts + Bootstrap Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="dark-mode.css">
     <link rel="stylesheet" href="queuetracker-style.css">
+    <style>
+        .btn-back {
+            background: transparent;
+            border: 1.5px solid #d4dfcd;
+            border-radius: 10px;
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #006837;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-back:hover {
+            background: #e8f3ef;
+            border-color: #006837;
+        }
+        body.dark-mode .btn-back {
+            color: #64b5f6;
+            border-color: #2a4a6a;
+        }
+        body.dark-mode .btn-back:hover {
+            background: #1a3a5a;
+            border-color: #4a7a9a;
+        }
+        /* Make building cards more compact */
+        .building-overview {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        }
+        @media (max-width: 768px) {
+            .building-overview {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 480px) {
+            .building-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
 
     <div class="container py-4">
-        <!-- Page Header -->
-        <div class="page-header mb-4">
-            <h1><i class="bi bi-bar-chart-line me-2"></i>Queue Tracker</h1>
-            <p class="text-muted">Real-time elevator queue status across all DLSU buildings.</p>
+        <div class="page-header mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-bar-chart-line me-2"></i>Queue Tracker</h1>
+                <p class="text-muted">Real-time elevator queue status across all DLSU buildings.</p>
+            </div>
+            <button class="btn btn-back" id="backToDashboardBtn">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </button>
         </div>
 
-        <!-- Building Overview -->
+        <!-- Building Overview - All 10 Buildings -->
         <div class="building-overview" id="buildingOverview">
-            <!-- Gokongwei Hall -->
-            <div class="building-card" data-building="Gokongwei Hall">
-                <div class="building-name">Gokongwei Hall</div>
-                <div class="building-status" id="status-gokongwei">
+            <!-- St. La Salle Hall -->
+            <div class="building-card" data-building="St. La Salle Hall">
+                <div class="building-name">St. La Salle Hall</div>
+                <div class="building-status" id="status-ls">
                     <span class="status-dot status-unknown"></span>
                     <span class="status-text">No reports</span>
                 </div>
@@ -46,10 +88,10 @@
                 </div>
             </div>
 
-            <!-- Velasco Hall -->
-            <div class="building-card" data-building="Velasco Hall">
-                <div class="building-name">Velasco Hall</div>
-                <div class="building-status" id="status-velasco">
+            <!-- Yuchengco Hall -->
+            <div class="building-card" data-building="Yuchengco Hall">
+                <div class="building-name">Yuchengco Hall</div>
+                <div class="building-status" id="status-yuchengco">
                     <span class="status-dot status-unknown"></span>
                     <span class="status-text">No reports</span>
                 </div>
@@ -70,6 +112,18 @@
                 </div>
             </div>
 
+            <!-- Velasco Hall -->
+            <div class="building-card" data-building="Velasco Hall">
+                <div class="building-name">Velasco Hall</div>
+                <div class="building-status" id="status-velasco">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+
             <!-- St. Miguel Hall -->
             <div class="building-card" data-building="St. Miguel Hall">
                 <div class="building-name">St. Miguel Hall</div>
@@ -82,10 +136,46 @@
                 </div>
             </div>
 
-            <!-- Enrique Razon Hall -->
-            <div class="building-card" data-building="Enrique Razon Hall">
-                <div class="building-name">Enrique Razon Hall</div>
-                <div class="building-status" id="status-enriquerazon">
+            <!-- Gokongwei Hall -->
+            <div class="building-card" data-building="Gokongwei Hall">
+                <div class="building-name">Gokongwei Hall</div>
+                <div class="building-status" id="status-gokongwei">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+
+            <!-- STRC -->
+            <div class="building-card" data-building="STRC">
+                <div class="building-name">STRC</div>
+                <div class="building-status" id="status-strc">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+
+            <!-- Razon Sports Center -->
+            <div class="building-card" data-building="Razon Sports Center">
+                <div class="building-name">Razon Sports Center</div>
+                <div class="building-status" id="status-razon">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+
+            <!-- Andrew Gonzalez Hall -->
+            <div class="building-card" data-building="Andrew Gonzalez Hall">
+                <div class="building-name">Andrew Gonzalez Hall</div>
+                <div class="building-status" id="status-andrew">
                     <span class="status-dot status-unknown"></span>
                     <span class="status-text">No reports</span>
                 </div>
@@ -172,6 +262,8 @@
             </div>
         </div>
     </div>
+
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="queuetracker-script.js"></script>

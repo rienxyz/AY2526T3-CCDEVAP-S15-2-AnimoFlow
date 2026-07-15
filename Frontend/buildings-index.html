@@ -4,20 +4,49 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" type="text/css" media="all" href="buildings-style.css">
+    <link rel="stylesheet" href="dark-mode.css">
+    <link rel="stylesheet" href="buildings-style.css">
     <meta charset="UTF-8">
     <title>AnimoFlow · Buildings</title>
+    <style>
+        .btn-back {
+            background: transparent;
+            border: 1.5px solid #d4dfcd;
+            border-radius: 10px;
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #006837;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-back:hover {
+            background: #e8f3ef;
+            border-color: #006837;
+        }
+        body.dark-mode .btn-back {
+            color: #64b5f6;
+            border-color: #2a4a6a;
+        }
+        body.dark-mode .btn-back:hover {
+            background: #1a3a5a;
+            border-color: #4a7a9a;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container py-4">
-        <!-- Page Header -->
-        <div class="page-header mb-4">
-            <h1><i class="bi bi-building me-2"></i>Buildings</h1>
-            <p class="text-muted">Explore DLSU campus buildings and their information.</p>
+        <div class="page-header mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-building me-2"></i>Buildings</h1>
+                <p class="text-muted">Explore DLSU campus buildings and their information.</p>
+            </div>
+            <button class="btn btn-back" id="backToDashboardBtn">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </button>
         </div>
 
-        <!-- Building Selection Card -->
         <div class="card-custom">
             <div class="card-header-custom">
                 <i class="bi bi-grid-3x3-gap-fill me-2"></i>Select a Building
@@ -47,7 +76,6 @@
             </div>
         </div>
 
-        <!-- Building Info Card -->
         <div class="card-custom mt-4" id="infodisp" style="display: none;">
             <div class="card-header-custom">
                 <i class="bi bi-info-circle me-2"></i>Building Information
@@ -65,6 +93,8 @@
             </div>
         </div>
     </div>
+
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="buildings-script.js"></script>

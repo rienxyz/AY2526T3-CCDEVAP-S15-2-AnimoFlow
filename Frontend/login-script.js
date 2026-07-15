@@ -1,6 +1,5 @@
 /**
- * AnimoFlow Login Page - External JavaScript
- * Handles DLSU email validation, guest access, toast notifications
+ * AnimoFlow Login Page - With Backend Authentication
  */
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -12,6 +11,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const emailErrorDiv = document.getElementById('emailError');
     const passwordErrorDiv = document.getElementById('passwordError');
     const forgotLink = document.getElementById('forgotLink');
+    
+    // ===== DARK MODE TOGGLE =====
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('animoflow_darkmode', isDark ? 'dark' : 'light');
+        if (darkModeToggle) {
+            darkModeToggle.textContent = isDark ? '☀️' : '🌙';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('animoflow_darkmode');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (darkModeToggle) darkModeToggle.textContent = '☀️';
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
     
     const toastElement = document.getElementById('liveToast');
     let bsToast = null;
@@ -36,7 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function validateDLSUEmail(email) {
         if (!email) return false;
-        return email.trim().toLowerCase().includes('@dlsu.edu.ph');
+        const trimmed = email.trim().toLowerCase();
+        // ONLY allow admin emails to be recognized as admin
+        // This doesn't give admin access, it just validates the email format
+        return trimmed.includes('@dlsu.edu.ph');
     }
     
     function validatePassword(password) {
@@ -50,22 +74,78 @@ document.addEventListener('DOMContentLoaded', function() {
         if (passwordErrorDiv) passwordErrorDiv.classList.add('d-none');
     }
     
-    function handleLoginSuccess(email, isGuest = false) {
-        const userType = isGuest ? 'Guest' : 'DLSU Student/Faculty';
-        const userIdentifier = isGuest ? 'guest_user' : email;
-        
-        localStorage.setItem('animoflow_user', JSON.stringify({
-            email: userIdentifier,
-            role: isGuest ? 'guest' : 'user',
-            loginTime: new Date().toISOString()
-        }));
-        
-        showToast(`Welcome, ${userType}! Redirecting to dashboard...`, 'success');
-        
-        setTimeout(() => {
-            // FIXED: Redirect to dashboard-index.html instead of dashboard.html
-            window.location.href = 'dashboard-index.html';
-        }, 1000);
+    async function handleLoginSuccess(email, password, isGuest = false) {
+        if (isGuest) {
+            localStorage.setItem('animoflow_user', JSON.stringify({
+                email: 'guest_user',
+                role: 'guest',
+                loginTime: new Date().toISOString()
+            }));
+            showToast('Welcome, Guest! Redirecting to dashboard...', 'success');
+            setTimeout(() => {
+                window.location.href = 'dashboard-index.html';
+            }, 1000);
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:3999/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                showToast(data.error || 'Login failed', 'error');
+                if (loginBtn) {
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                }
+                return;
+            }
+
+            if (data.success) {
+                // Store user info - role comes from the server
+                localStorage.setItem('animoflow_user', JSON.stringify({
+                    email: data.user.email,
+                    role: data.user.role || 'user', // Server decides if admin
+                    loginTime: new Date().toISOString()
+                }));
+
+                // If admin, set admin token too
+                if (data.user.role === 'admin') {
+                    const adminToken = btoa(data.user.email + ':' + Date.now());
+                    localStorage.setItem('animoflow_admin_token', adminToken);
+                    localStorage.setItem('animoflow_admin_user', JSON.stringify({
+                        email: data.user.email,
+                        role: 'admin'
+                    }));
+                    showToast('Welcome, Admin! Redirecting to admin panel...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1000);
+                } else {
+                    showToast('Welcome! Redirecting to dashboard...', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard-index.html';
+                    }, 1000);
+                }
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            showToast('Server error. Please try again.', 'error');
+            if (loginBtn) {
+                loginBtn.classList.remove('loading');
+                loginBtn.disabled = false;
+            }
+        }
     }
     
     function handleLogin(event) {
@@ -80,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginBtn.disabled = true;
             }
             setTimeout(() => {
-                handleLoginSuccess('guest@animoflow.local', true);
+                handleLoginSuccess(null, null, true);
                 if (loginBtn) {
                     loginBtn.classList.remove('loading');
                     loginBtn.disabled = false;
@@ -89,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        const email = emailInput ? emailInput.value : '';
+        const email = emailInput ? emailInput.value.trim() : '';
         const password = passwordInput ? passwordInput.value : '';
         let isValid = true;
         
@@ -115,13 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loginBtn.disabled = true;
         }
         
-        setTimeout(() => {
-            handleLoginSuccess(email, false);
-            if (loginBtn) {
-                loginBtn.classList.remove('loading');
-                loginBtn.disabled = false;
-            }
-        }, 800);
+        handleLoginSuccess(email, password, false);
     }
     
     function onEmailInput() {
@@ -161,12 +235,24 @@ document.addEventListener('DOMContentLoaded', function() {
             if (emailInput) {
                 emailInput.classList.remove('is-invalid');
                 emailInput.placeholder = "guest@dlsu.edu.ph (optional)";
+                emailInput.disabled = true;
             }
-            if (passwordInput) passwordInput.classList.remove('is-invalid');
+            if (passwordInput) {
+                passwordInput.classList.remove('is-invalid');
+                passwordInput.disabled = true;
+                passwordInput.placeholder = "Not required for guest";
+            }
             if (emailErrorDiv) emailErrorDiv.classList.add('d-none');
             if (passwordErrorDiv) passwordErrorDiv.classList.add('d-none');
         } else {
-            if (emailInput) emailInput.placeholder = "juandelacruz@dlsu.edu.ph";
+            if (emailInput) {
+                emailInput.placeholder = "juandelacruz@dlsu.edu.ph";
+                emailInput.disabled = false;
+            }
+            if (passwordInput) {
+                passwordInput.disabled = false;
+                passwordInput.placeholder = "Minimum 8 characters";
+            }
         }
     }
     
@@ -187,5 +273,5 @@ document.addEventListener('DOMContentLoaded', function() {
     if (guestCheckbox) guestCheckbox.addEventListener('change', onGuestToggle);
     if (forgotLink) forgotLink.addEventListener('click', handleForgotPassword);
     
-    console.log('[AnimoFlow] Login page initialized');
+    console.log('[AnimoFlow] Login page initialized with backend authentication');
 });

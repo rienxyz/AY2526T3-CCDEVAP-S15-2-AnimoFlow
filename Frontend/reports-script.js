@@ -1,25 +1,90 @@
 /**
- * AnimoFlow Reports Page - Partial/Progress Version
- * Core functionality: Submit reports, view recent reports, localStorage persistence
- * TODO for completion: Backend API integration, user session, admin features
+ * AnimoFlow Reports Page - Full Version with Guest Restrictions
+ * Dynamic elevator dropdown based on building selection
  */
 
-// Wait for DOM to load
+// ===== ELEVATOR DATA =====
+const elevatorData = {
+    "St. La Salle Hall": {
+        elevators: ["LS-East-1", "LS-East-2", "LS-West-1", "LS-West-2"],
+        hint: "2 elevators on each side (East/West)"
+    },
+    "Henry Sy Hall": {
+        elevators: ["H-Ground-A", "H-Ground-B", "H-Ground-C", "H-6th-A", "H-6th-B"],
+        hint: "3 at Ground floor, 2 at 6th floor"
+    },
+    "Yuchengco Hall": {
+        elevators: ["Y-A", "Y-B", "Y-C"],
+        hint: "3 elevators in one bay"
+    },
+    "St. Joseph Hall": {
+        elevators: ["SJ-1"],
+        hint: "1 elevator"
+    },
+    "Velasco Hall": {
+        elevators: ["V-1"],
+        hint: "1 elevator"
+    },
+    "St. Miguel Hall": {
+        elevators: ["M-1"],
+        hint: "1 elevator"
+    },
+    "Gokongwei Hall": {
+        elevators: [],
+        hint: "⚠️ No elevators available"
+    },
+    "STRC": {
+        elevators: ["STRC-1"],
+        hint: "1 elevator"
+    },
+    "Razon Sports Center": {
+        elevators: ["R-A", "R-B", "R-C"],
+        hint: "3 elevators in one bay"
+    },
+    "Andrew Gonzalez Hall": {
+        elevators: ["A-Public-1", "A-Public-2", "A-Public-3", "A-Public-4", "A-Staff"],
+        hint: "4 public elevators + 1 staff/faculty only"
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // ===== DARK MODE TOGGLE =====
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('animoflow_darkmode', isDark ? 'dark' : 'light');
+        if (darkModeToggle) {
+            darkModeToggle.textContent = isDark ? '☀️' : '🌙';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('animoflow_darkmode');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (darkModeToggle) darkModeToggle.textContent = '☀️';
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
     
     // ========== DOM Elements ==========
     const reportForm = document.getElementById('reportForm');
     const buildingSelect = document.getElementById('buildingSelect');
-    const elevatorNameInput = document.getElementById('elevatorName');
+    const elevatorSelect = document.getElementById('elevatorSelect');
+    const elevatorHint = document.getElementById('elevatorHint');
     const queueOptions = document.querySelectorAll('.queue-option');
     const queueLengthHidden = document.getElementById('queueLength');
     const submitBtn = document.getElementById('submitBtn');
     const refreshBtn = document.getElementById('refreshBtn');
     const reportsList = document.getElementById('reportsList');
-    const emptyState = document.getElementById('emptyState');
     const queueError = document.getElementById('queueError');
+    const guestBanner = document.getElementById('guestBanner');
+    const backBtn = document.getElementById('backToDashboardBtn');
     
-    // Toast element
     const toastElement = document.getElementById('liveToast');
     let bsToast = null;
     
@@ -30,20 +95,144 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ========== Helper Functions ==========
+    // ===== BACK TO DASHBOARD =====
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            window.location.href = 'dashboard-index.html';
+        });
+    }
     
+    // ========== DYNAMIC ELEVATOR DROPDOWN ==========
+    function updateElevatorDropdown() {
+        const selectedBuilding = buildingSelect.value;
+        
+        // Clear current options
+        elevatorSelect.innerHTML = '';
+        
+        if (!selectedBuilding || !elevatorData[selectedBuilding]) {
+            elevatorSelect.disabled = true;
+            elevatorSelect.innerHTML = '<option value="">Select a building first</option>';
+            elevatorHint.textContent = 'Select a building to see available elevators';
+            return;
+        }
+        
+        const buildingInfo = elevatorData[selectedBuilding];
+        const elevators = buildingInfo.elevators;
+        
+        if (elevators.length === 0) {
+            elevatorSelect.disabled = true;
+            elevatorSelect.innerHTML = '<option value="">No elevators available</option>';
+            elevatorHint.textContent = buildingInfo.hint;
+            return;
+        }
+        
+        // Populate elevators
+        elevatorSelect.disabled = false;
+        elevatorSelect.innerHTML = '<option value="">Select an elevator</option>';
+        elevators.forEach(elevator => {
+            const option = document.createElement('option');
+            option.value = elevator;
+            option.textContent = elevator;
+            elevatorSelect.appendChild(option);
+        });
+        
+        elevatorHint.textContent = buildingInfo.hint;
+    }
+    
+    // Building selection change handler
+    buildingSelect.addEventListener('change', function() {
+        updateElevatorDropdown();
+        // Reset queue selection when building changes
+        queueOptions.forEach(opt => opt.classList.remove('selected'));
+        queueLengthHidden.value = '';
+    });
+    
+    // ========== CHECK USER ROLE ==========
+    function checkUserRole() {
+        let userData = localStorage.getItem('animoflow_user');
+        let isGuest = true;
+        let userEmail = 'guest_user';
+        
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                userEmail = user.email;
+                isGuest = (userEmail === 'guest_user' || userEmail === 'guest' || user.role === 'guest');
+            } catch (e) {
+                isGuest = true;
+            }
+        }
+        
+        return { isGuest, userEmail };
+    }
+    
+    // ========== APPLY GUEST RESTRICTIONS ==========
+    function applyGuestRestrictions() {
+        const { isGuest } = checkUserRole();
+        
+        if (isGuest) {
+            if (guestBanner) guestBanner.style.display = 'block';
+            if (buildingSelect) buildingSelect.disabled = true;
+            if (elevatorSelect) elevatorSelect.disabled = true;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="bi bi-lock me-2"></i>Login to Submit';
+                submitBtn.style.opacity = '0.6';
+                submitBtn.style.cursor = 'not-allowed';
+            }
+            queueOptions.forEach(opt => {
+                opt.style.opacity = '0.5';
+                opt.style.cursor = 'not-allowed';
+                opt.style.pointerEvents = 'none';
+            });
+            const formContainer = document.querySelector('.report-form-container');
+            if (formContainer) {
+                let existingMsg = formContainer.querySelector('.guest-form-message');
+                if (!existingMsg) {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'alert alert-warning mb-3 guest-form-message';
+                    messageDiv.innerHTML = `
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>View-Only Mode:</strong> You are browsing as a guest. 
+                        <a href="login-index.html" class="alert-link">Login with your DLSU email</a> to submit reports.
+                    `;
+                    formContainer.prepend(messageDiv);
+                }
+            }
+        } else {
+            if (guestBanner) guestBanner.style.display = 'none';
+            if (buildingSelect) buildingSelect.disabled = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-send me-2"></i>Submit Report';
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            }
+            queueOptions.forEach(opt => {
+                opt.style.opacity = '1';
+                opt.style.cursor = 'pointer';
+                opt.style.pointerEvents = 'auto';
+            });
+            const formContainer = document.querySelector('.report-form-container');
+            if (formContainer) {
+                const msg = formContainer.querySelector('.guest-form-message');
+                if (msg) msg.remove();
+            }
+            // Re-enable elevator dropdown based on building selection
+            updateElevatorDropdown();
+        }
+    }
+    
+    // ========== Helper Functions ==========
     function showToast(message, type = 'info') {
         if (!bsToast || !toastElement) return;
         const toastBody = toastElement.querySelector('.toast-body');
         if (toastBody) toastBody.innerHTML = message;
-        
-        toastElement.classList.remove('bg-success', 'bg-danger', 'bg-primary');
-        if (type === 'success') {
-            toastElement.style.background = '#006837';
-        } else if (type === 'error') {
-            toastElement.style.background = '#dc3545';
+        toastElement.style.background = type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#006837';
+        if (type === 'warning') {
+            toastElement.querySelector('.toast-body').style.color = '#1a2b1a';
         } else {
-            toastElement.style.background = '#006837';
+            toastElement.querySelector('.toast-body').style.color = 'white';
         }
         bsToast.show();
     }
@@ -58,42 +247,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== Queue Selection ==========
     queueOptions.forEach(option => {
         option.addEventListener('click', function() {
-            // Remove selected class from all
+            const { isGuest } = checkUserRole();
+            if (isGuest) {
+                showToast('Please login to submit reports', 'warning');
+                return;
+            }
             queueOptions.forEach(opt => opt.classList.remove('selected'));
-            // Add selected class to clicked
             this.classList.add('selected');
-            // Set hidden value
             const queueValue = this.getAttribute('data-queue');
             queueLengthHidden.value = queueValue;
-            // Clear error if exists
             queueError.classList.add('d-none');
         });
     });
     
-    // ========== Load Reports from localStorage ==========
+    // ========== Load Reports ==========
     async function loadReports() {
         try {
             const response = await fetch("http://localhost:3999/api/report");
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch reports");
-            }
-
+            if (!response.ok) throw new Error("Failed to fetch reports");
             const reports = await response.json();
             const latestReportsMap = new Map();
-
             reports.forEach(report => {
                 const key = `${report.building}|${report.elevator}`;
-
                 if (!latestReportsMap.has(key) || report.timestamp > latestReportsMap.get(key).timestamp) {
                     latestReportsMap.set(key, report);
                 }
             });
-
-            const latestReports = Array.from(latestReportsMap.values());
-
-            latestReports.sort((a, b) => b.timestamp - a.timestamp);
-
+            const latestReports = Array.from(latestReportsMap.values()).sort((a, b) => b.timestamp - a.timestamp);
             if (latestReports.length === 0) {
                 reportsList.innerHTML = `
                     <div id="emptyState" class="text-center p-5 text-muted">
@@ -103,61 +283,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 return;
             }
-
             let html = "";
             latestReports.forEach(report => {
                 const badges = {
-                    short: {
-                        class: "short",
-                        text: "🟢 Short"
-                    },
-                    medium: {
-                        class: "medium",
-                        text: "🟡 Medium"
-                    },
-                    long: {
-                        class: "long",
-                        text: "🔴 Long"
-                    }
+                    short: { class: "short", text: "🟢 Short" },
+                    medium: { class: "medium", text: "🟡 Medium" },
+                    long: { class: "long", text: "🔴 Long" }
                 };
-
-                const badge = badges[report.queueLength] ?? {
-                    class: "",
-                    text: report.queueLength
-                };
-
+                const badge = badges[report.queueLength] ?? { class: "", text: report.queueLength };
                 html += `
                     <div class="report-card">
                         <div class="report-header">
                             <span class="report-building">${escapeHtml(report.building)}</span>
                             <span class="report-time">${formatTimeAgo(report.timestamp)}</span>
                         </div>
-
                         <div class="report-elevator">
                             <i class="bi bi-elevator"></i>${escapeHtml(report.elevator)}
                         </div>
-
                         <div>
-                            <span class="queue-badge ${badge.class}">
-                                ${badge.text}
-                            </span>
+                            <span class="queue-badge ${badge.class}">${badge.text}</span>
                         </div>
                     </div>
                 `;
             });
-
             reportsList.innerHTML = html;
-
         } catch (err) {
             reportsList.innerHTML = `
                 <div class="text-center p-5 text-danger">
-                    Failed to load reports.
+                    Failed to load reports. Make sure the server is running.
                 </div>
             `;
         }
     }
     
-    // Simple escape to prevent XSS
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -168,93 +326,71 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ========== Submit New Report ==========
+    // ========== Submit Report ==========
     function submitReport(event) {
         event.preventDefault();
-        
-        // Validate building
+        const { isGuest, userEmail } = checkUserRole();
+        if (isGuest) {
+            showToast('Guest users cannot submit reports. Please login with your DLSU email.', 'warning');
+            return;
+        }
         const building = buildingSelect.value;
-        if (!building) {
-            showToast('Please select a building', 'error');
-            return;
-        }
-        
-        // Validate elevator name
-        const elevator = elevatorNameInput.value.trim();
-        if (!elevator) {
-            showToast('Please enter an elevator name/number', 'error');
-            return;
-        }
-        
-        // Validate queue length
+        if (!building) { showToast('Please select a building', 'error'); return; }
+        const elevator = elevatorSelect.value;
+        if (!elevator) { showToast('Please select an elevator', 'error'); return; }
         const queueLength = queueLengthHidden.value;
-        if (!queueLength) {
-            queueError.classList.remove('d-none');
-            showToast('Please select a queue length', 'error');
-            return;
-        }
+        if (!queueLength) { queueError.classList.remove('d-none'); showToast('Please select a queue length', 'error'); return; }
         
-        const newReport = { 
-            building: building,
-            elevator: elevator,
-            queueLength: queueLength,
-            userId: 'guest' // Replace with actual logged-in user
-        };
+        const newReport = { building, elevator, queueLength, userId: userEmail };
         
-        // Save to MongoDB via API
-        async function submitReport() {
+        async function submitToAPI() {
             try {
                 const response = await fetch("http://localhost:3999/api/report", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(newReport)
                 });
-
                 const result = await response.json();
-                console.log(result);
+                if (response.ok) {
+                    showToast('✅ Report submitted! Thank you for helping the DLSU community.', 'success');
+                    buildingSelect.value = '';
+                    elevatorSelect.innerHTML = '<option value="">Select a building first</option>';
+                    elevatorSelect.disabled = true;
+                    elevatorHint.textContent = 'Select a building to see available elevators';
+                    queueLengthHidden.value = '';
+                    queueOptions.forEach(opt => opt.classList.remove('selected'));
+                    loadReports();
+                } else {
+                    showToast('❌ ' + (result.error || 'Failed to submit report'), 'error');
+                }
             } catch (err) {
                 console.error(err);
+                showToast('❌ Server error. Make sure the backend is running.', 'error');
             }
         }
-
-        submitReport();
-        
-        // Show success message
-        showToast('Report submitted! Thank you for helping the DLSU community.', 'success');
-        
-        // Reset form
-        buildingSelect.value = '';
-        elevatorNameInput.value = '';
-        queueLengthHidden.value = '';
-        queueOptions.forEach(opt => opt.classList.remove('selected'));
-        
-        // Refresh the reports list
-        loadReports();
+        submitToAPI();
     }
     
-    // ========== Refresh Reports ==========
     function refreshReports() {
         loadReports();
         showToast('Reports refreshed!', 'info');
     }
     
     // ========== Event Listeners ==========
-    if (reportForm) {
-        reportForm.addEventListener('submit', submitReport);
-    }
-    
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', refreshReports);
-    }
+    if (reportForm) reportForm.addEventListener('submit', submitReport);
+    if (refreshBtn) refreshBtn.addEventListener('click', refreshReports);
     
     // ========== Initial Load ==========
+    applyGuestRestrictions();
     loadReports();
-    
-    // Auto-refresh every 30 seconds (optional, good for demo)
     setInterval(loadReports, 30000);
     
-    console.log('[AnimoFlow] Reports page initialized - Partial/Progress Version');
-    console.log('[TODO] Backend API integration, user session, admin delete functionality');
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'animoflow_user') {
+            applyGuestRestrictions();
+            loadReports();
+        }
+    });
+    
+    console.log('[AnimoFlow] Reports page initialized with dynamic elevator dropdown');
 });

@@ -1,13 +1,44 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // ===== DARK MODE TOGGLE =====
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('animoflow_darkmode', isDark ? 'dark' : 'light');
+        if (darkModeToggle) {
+            darkModeToggle.textContent = isDark ? '☀️' : '🌙';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('animoflow_darkmode');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (darkModeToggle) darkModeToggle.textContent = '☀️';
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
+
+    // ===== BACK TO DASHBOARD =====
+    const backBtn = document.getElementById('backToDashboardBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            window.location.href = 'dashboard-index.html';
+        });
+    }
+});
+
 const mDisp = document.getElementById('infodisp');
 const clear = document.getElementById('clea');
-const maps = document.getElementById('map');
 
 mDisp.style.display = 'none';
 
 const campusData = {
     lsh: {
         title: "St. La Salle Hall",
-        description: "It is the oldest building in the campus. The building has 4 floors and is mainly used by SHS students, however, some SOE and COB subjects hold classes here as well. ",
+        description: "It is the oldest building in the campus. The building has 4 floors and is mainly used by SHS students, however, some SOE and COB subjects hold classes here as well.",
         floors: 4,
         elevators: 2,
         image: "Images/LaSalle.jpg"
@@ -41,7 +72,7 @@ const campusData = {
         image: "Images/Jos.jpg"
     },
     blmn: {
-        title: "Br. Alphonsus Bloemen Hal",
+        title: "Br. Alphonsus Bloemen Hall",
         description: "Building that houses various food stalls as well as the studio of the school broadcasting organization: Green Giant FM.",
         floors: 2,
         elevators: 0,
@@ -94,12 +125,10 @@ const campusData = {
 function showBuildingInfo(buildingId) {
     mDisp.style.display = 'block';
     const building = campusData[buildingId];
-    
     if (!building) {
         console.error("Building data not found for ID:", buildingId);
         return;
     }
-
     document.getElementById("info-title").innerText = building.title;
     document.getElementById("info-description").innerText = building.description;
     document.getElementById("info-floors").innerText = `Floors: ${building.floors}`;

@@ -98,23 +98,55 @@ body::before {
     font-size: 0.9rem;
 }
 
-/* ===== Building Overview Cards ===== */
+/* ===== Building Overview - Scrollable Row ===== */
 .building-overview {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    display: flex;
     gap: 0.75rem;
+    overflow-x: auto;
+    padding: 0.5rem 0.25rem 1rem 0.25rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 2rem;
+    justify-content: center;
+    flex-wrap: wrap; /* Wraps to next line if needed */
 }
 
 .building-card {
+    flex: 0 0 auto;
+    width: 150px;
     background: white;
     border-radius: 16px;
-    padding: 1rem 0.75rem;
+    padding: 0.85rem 0.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border: 1px solid #e8ede6;
     transition: all 0.2s;
     cursor: pointer;
     text-align: center;
+    scroll-snap-align: start;
+}
+
+.building-overview::-webkit-scrollbar {
+    height: 4px;
+}
+
+.building-overview::-webkit-scrollbar-track {
+    background: #f0f3ed;
+    border-radius: 4px;
+}
+
+.building-overview::-webkit-scrollbar-thumb {
+    background: #006837;
+    border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+    .building-card {
+        width: 130px;
+        padding: 0.6rem 0.4rem;
+    }
+    .building-card .building-name {
+        font-size: 0.7rem;
+    }
 }
 
 .building-card:hover {
@@ -550,4 +582,31 @@ body::before {
     .page-header {
         text-align: center;
     }
+}
+
+.btn-back {
+    background: transparent;
+    border: 1.5px solid #d4dfcd;
+    border-radius: 12px;
+    padding: 0.5rem 1.2rem;
+    font-weight: 500;
+    color: #006837;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-back:hover {
+    background: #e8f3ef;
+    border-color: #006837;
+}
+
+/* Dark mode version */
+body.dark-mode .btn-back {
+    color: #64b5f6;
+    border-color: #2a4a6a;
+}
+
+body.dark-mode .btn-back:hover {
+    background: #1a3a5a;
+    border-color: #4a7a9a;
 }

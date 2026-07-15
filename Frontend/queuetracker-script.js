@@ -1,10 +1,45 @@
 /**
- * AnimoFlow Queue Tracker Page - Partial/Progress Version
- * Displays real-time elevator queue status across all DLSU buildings
- * TODO for completion: Backend API integration, WebSocket for real-time updates
+ * AnimoFlow Queue Tracker Page
+ * Updated to include all 10 buildings
  */
 
+// ===== ALL BUILDINGS LIST =====
+const ALL_BUILDINGS = [
+    "St. La Salle Hall",
+    "Henry Sy Hall",
+    "Yuchengco Hall",
+    "St. Joseph Hall",
+    "Velasco Hall",
+    "St. Miguel Hall",
+    "Gokongwei Hall",
+    "STRC",
+    "Razon Sports Center",
+    "Andrew Gonzalez Hall"
+];
+
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // ===== DARK MODE TOGGLE =====
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('animoflow_darkmode', isDark ? 'dark' : 'light');
+        if (darkModeToggle) {
+            darkModeToggle.textContent = isDark ? '☀️' : '🌙';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('animoflow_darkmode');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (darkModeToggle) darkModeToggle.textContent = '☀️';
+    }
+
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
     
     // ========== DOM Elements ==========
     const queueTableBody = document.getElementById('queueTableBody');
@@ -12,33 +47,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const refreshBtn = document.getElementById('refreshTrackerBtn');
     const filterBtn = document.getElementById('filterBtn');
     const buildingCards = document.querySelectorAll('.building-card');
+    const backBtn = document.getElementById('backToDashboardBtn');
     
-    // Toast
-    const toastElement = document.getElementById('liveToast');
-    let bsToast = null;
-    
-    if (toastElement) {
-        bsToast = new bootstrap.Toast(toastElement, {
-            autohide: true,
-            delay: 3000
+    // ===== BACK TO DASHBOARD =====
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            window.location.href = 'dashboard-index.html';
         });
     }
     
-    // ========== Helper Functions ==========
+    const toastElement = document.getElementById('liveToast');
+    let bsToast = null;
+    if (toastElement) {
+        bsToast = new bootstrap.Toast(toastElement, { autohide: true, delay: 3000 });
+    }
     
     function showToast(message, type = 'info') {
         if (!bsToast || !toastElement) return;
         const toastBody = toastElement.querySelector('.toast-body');
         if (toastBody) toastBody.innerHTML = message;
-        
-        toastElement.classList.remove('bg-success', 'bg-danger', 'bg-primary');
-        if (type === 'success') {
-            toastElement.style.background = '#006837';
-        } else if (type === 'error') {
-            toastElement.style.background = '#dc3545';
-        } else {
-            toastElement.style.background = '#006837';
-        }
+        toastElement.style.background = type === 'error' ? '#dc3545' : '#006837';
         bsToast.show();
     }
     
@@ -62,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ========== Get Queue Status ==========
     function getQueueStatus(queueLength) {
         switch(queueLength) {
             case 'short': return { label: 'Short', class: 'short', emoji: '🟢' };
@@ -88,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             const latestReports = Array.from(latestReportsMap.values());
-            // Sort by timestamp descending (newest first)
             latestReports.sort((a, b) => b.timestamp - a.timestamp);
             
             // Update building overview cards
@@ -116,14 +142,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const buildingName = card.getAttribute('data-building');
             const reportsForBuilding = buildingMap.get(buildingName) || [];
             
-            // Find the worst queue status for this building (highest severity)
-            // Order: long > medium > short
+            // Find the worst queue status for this building
             let worstStatus = 'unknown';
             let worstLabel = 'No reports';
             let elevatorCount = reportsForBuilding.length;
             
             if (reportsForBuilding.length > 0) {
-                // Check if any long reports exist
                 const hasLong = reportsForBuilding.some(r => r.queueLength === 'long');
                 const hasMedium = reportsForBuilding.some(r => r.queueLength === 'medium');
                 const hasShort = reportsForBuilding.some(r => r.queueLength === 'short');
@@ -146,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const dot = statusDiv.querySelector('.status-dot');
                 const text = statusDiv.querySelector('.status-text');
                 
-                // Remove all status classes
                 dot.classList.remove('status-short', 'status-medium', 'status-long', 'status-unknown');
                 dot.classList.add(`status-${worstStatus}`);
                 
@@ -171,20 +194,15 @@ document.addEventListener('DOMContentLoaded', function() {
         queueTableBody.innerHTML = '';
         
         if (reports.length === 0) {
-            // Show empty state
             emptyQueueTable.style.display = 'block';
             return;
         }
         
-        // Hide empty state
         emptyQueueTable.style.display = 'none';
         
-        // Build table rows
         reports.forEach(report => {
             const status = getQueueStatus(report.queueLength);
             const tr = document.createElement('tr');
-            
-            // For responsive design - add data-label attributes
             tr.innerHTML = `
                 <td data-label="Building">${escapeHtml(report.building)}</td>
                 <td data-label="Elevator">${escapeHtml(report.elevator)}</td>
@@ -193,44 +211,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
                 <td data-label="Reported">${formatTimeAgo(report.timestamp)}</td>
             `;
-            
             queueTableBody.appendChild(tr);
         });
     }
     
-    // ========== Refresh ==========
     function refreshQueueData() {
         loadQueueData();
         showToast('Queue data refreshed!', 'info');
     }
     
-    // ========== Filter Dropdown Toggle ==========
+    // ========== Filter ==========
     function toggleFilter() {
         let filterDropdown = document.getElementById('filterDropdown');
-        
         if (!filterDropdown) {
-            // Create filter dropdown if it doesn't exist
             filterDropdown = document.createElement('div');
             filterDropdown.id = 'filterDropdown';
             filterDropdown.className = 'filter-dropdown';
-            
             const cardHeader = document.querySelector('.card-header-custom');
             const tableContainer = document.querySelector('.queue-table-container');
-            
             if (cardHeader && tableContainer) {
                 cardHeader.parentNode.insertBefore(filterDropdown, tableContainer);
+                
+                // Build options from ALL_BUILDINGS
+                let buildingOptions = '<option value="all">All Buildings</option>';
+                ALL_BUILDINGS.forEach(building => {
+                    buildingOptions += `<option value="${building}">${building}</option>`;
+                });
                 
                 filterDropdown.innerHTML = `
                     <div class="filter-group">
                         <label style="font-size:0.85rem; font-weight:500; color:#006837;">Filter by:</label>
                         <select id="filterBuilding">
-                            <option value="all">All Buildings</option>
-                            <option value="Gokongwei Hall">Gokongwei Hall</option>
-                            <option value="Henry Sy Hall">Henry Sy Hall</option>
-                            <option value="Velasco Hall">Velasco Hall</option>
-                            <option value="St. Joseph Hall">St. Joseph Hall</option>
-                            <option value="St. Miguel Hall">Brother Kenneth Hall</option>
-                            <option value="Enrique Razon">Enrique Razon</option>
+                            ${buildingOptions}
                         </select>
                         <select id="filterStatus">
                             <option value="all">All Status</option>
@@ -242,18 +254,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button class="btn-clear-filter" id="clearFilterBtn">Clear</button>
                     </div>
                 `;
-                
-                // Add event listeners for filter
                 document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
                 document.getElementById('clearFilterBtn').addEventListener('click', clearFilter);
             }
         }
-        
-        // Toggle visibility
         filterDropdown.classList.toggle('show');
     }
     
-    // ========== Apply Filter ==========
     async function applyFilter() {
         try {
             const buildingFilter = document.getElementById('filterBuilding').value;
@@ -262,17 +269,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch("http://localhost:3999/api/report");
             let filtered = await response.json();
             
-            // Apply building filter
             if (buildingFilter !== 'all') {
                 filtered = filtered.filter(r => r.building === buildingFilter);
             }
-            
-            // Apply status filter
             if (statusFilter !== 'all') {
                 filtered = filtered.filter(r => r.queueLength === statusFilter);
             }
             
-            // Group by elevator to show latest only
             const latestReportsMap = new Map();
             filtered.forEach(report => {
                 const key = `${report.building}|${report.elevator}`;
@@ -284,57 +287,40 @@ document.addEventListener('DOMContentLoaded', function() {
             const latestReports = Array.from(latestReportsMap.values());
             latestReports.sort((a, b) => b.timestamp - a.timestamp);
             
-            // Update building cards (showing filtered data)
             updateBuildingCards(latestReports);
-            
-            // Update table
             updateQueueTable(latestReports);
             
-            // Close filter dropdown
             const dropdown = document.getElementById('filterDropdown');
             if (dropdown) dropdown.classList.remove('show');
-            
             showToast('Filter applied!', 'info');
         } catch(err) {
             console.error(err);
         }
     }
     
-    // ========== Clear Filter ==========
     function clearFilter() {
-        // Reset filter dropdowns
         const buildingFilter = document.getElementById('filterBuilding');
         const statusFilter = document.getElementById('filterStatus');
         if (buildingFilter) buildingFilter.value = 'all';
         if (statusFilter) statusFilter.value = 'all';
-        
-        // Reload full data
         loadQueueData();
-        
-        // Close filter dropdown
         const dropdown = document.getElementById('filterDropdown');
         if (dropdown) dropdown.classList.remove('show');
-        
         showToast('Filters cleared', 'info');
     }
     
-    // ========== Building Card Click - Filter by Building ==========
     function handleBuildingCardClick(event) {
         const card = event.currentTarget;
         const buildingName = card.getAttribute('data-building');
-        
-        // Toggle filter dropdown visibility
         let filterDropdown = document.getElementById('filterDropdown');
         if (!filterDropdown) {
             toggleFilter();
             filterDropdown = document.getElementById('filterDropdown');
         }
-        
         if (filterDropdown) {
             const buildingSelect = document.getElementById('filterBuilding');
             if (buildingSelect) {
                 buildingSelect.value = buildingName;
-                // Auto-apply filter
                 setTimeout(() => {
                     applyFilter();
                 }, 100);
@@ -342,42 +328,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // ========== Auto-Refresh ==========
-    let autoRefreshInterval = null;
-    
-    function startAutoRefresh() {
-        const autoPref = localStorage.getItem('animoflow_auto_refresh');
-        if (autoPref === 'true' || autoPref === null) {
-            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-            autoRefreshInterval = setInterval(() => {
-                loadQueueData();
-            }, 30000); // Refresh every 30 seconds
-        }
-    }
-    
-    function stopAutoRefresh() {
-        if (autoRefreshInterval) {
-            clearInterval(autoRefreshInterval);
-            autoRefreshInterval = null;
-        }
-    }
-    
-    // Listen for auto-refresh preference changes
-    window.addEventListener('storage', function(e) {
-        if (e.key === 'animoflow_auto_refresh') {
-            if (e.newValue === 'true') {
-                startAutoRefresh();
-            } else {
-                stopAutoRefresh();
-            }
-        }
-    });
-    
     // ========== Event Listeners ==========
     if (refreshBtn) {
         refreshBtn.addEventListener('click', refreshQueueData);
     }
-    
     if (filterBtn) {
         filterBtn.addEventListener('click', toggleFilter);
     }
@@ -386,10 +340,20 @@ document.addEventListener('DOMContentLoaded', function() {
         card.addEventListener('click', handleBuildingCardClick);
     });
     
-    // ========== Initial Load ==========
-    loadQueueData();
+    // ========== Auto-Refresh ==========
+    let autoRefreshInterval = null;
+    function startAutoRefresh() {
+        const autoPref = localStorage.getItem('animoflow_auto_refresh');
+        if (autoPref === 'true' || autoPref === null) {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                loadQueueData();
+            }, 30000);
+        }
+    }
     startAutoRefresh();
     
-    console.log('[AnimoFlow] Queue Tracker page initialized - Partial/Progress Version');
-    console.log('[TODO] WebSocket real-time updates, backend API integration, historical data');
+    // ========== Initial Load ==========
+    loadQueueData();
+    console.log('[AnimoFlow] Queue Tracker page initialized with all 10 buildings');
 });

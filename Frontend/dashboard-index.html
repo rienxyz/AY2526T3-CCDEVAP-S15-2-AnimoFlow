@@ -9,7 +9,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Dashboard Styles -->
+    <link rel="stylesheet" href="dark-mode.css">
     <link rel="stylesheet" href="dashboard-style.css">
 </head>
 <body>
@@ -33,33 +36,44 @@
 
         <ul class="sidebar-nav">
             <li>
-                <a href="#" class="active" data-page="dashboard">
+                <a href="dashboard-index.html" class="active" data-page="dashboard">
                     <i class="bi bi-speedometer2"></i> Dashboard
                 </a>
             </li>
             <li>
-                <a href="#" data-page="reports">
+                <a href="reports.html" data-page="reports">
                     <i class="bi bi-file-text"></i> Reports
                 </a>
             </li>
             <li>
-                <a href="#" data-page="queue">
+                <a href="queuetracker.html" data-page="queue">
                     <i class="bi bi-bar-chart-line"></i> Queue Tracker
                 </a>
             </li>
             <li>
-                <a href="#" data-page="findroom">
+                <a href="find-your-room.html" data-page="findroom">
                     <i class="bi bi-search"></i> Find Your Room
                 </a>
             </li>
             <li>
-                <a href="#" data-page="buildings">
+                <a href="buildings-index.html" data-page="buildings">
                     <i class="bi bi-building"></i> Buildings
                 </a>
             </li>
             <li>
-                <a href="#" data-page="profile">
+                <a href="map-index.html" data-page="map">
+                    <i class="bi bi-map"></i> Campus Map
+                </a>
+            </li>
+            <li>
+                <a href="profile.html" data-page="profile">
                     <i class="bi bi-person"></i> Profile
+                </a>
+            </li>
+            <!-- Admin Link (hidden by default, shown only to admins) -->
+            <li id="adminNavLink" style="display: none;">
+                <a href="admin.html" data-page="admin">
+                    <i class="bi bi-shield-lock"></i> Admin Panel
                 </a>
             </li>
         </ul>
@@ -133,6 +147,30 @@
                     </div>
                 </div>
 
+                <!-- Charts Row -->
+                <div class="row g-4 mt-2">
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="card-header bg-transparent border-0 py-3">
+                                <h5 class="mb-0 text-success"><i class="bi bi-bar-chart me-2"></i>Reports by Building</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="dashboardBuildingChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="card-header bg-transparent border-0 py-3">
+                                <h5 class="mb-0 text-success"><i class="bi bi-pie-chart me-2"></i>Queue Status Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="dashboardStatusChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Recent Activity Preview -->
                 <div class="card border-0 shadow-sm rounded-4 mt-4">
                     <div class="card-header bg-transparent border-0 py-3">
@@ -148,31 +186,6 @@
             </div>
         </section>
 
-        <!-- ===== REPORTS PAGE ===== -->
-        <section class="page-section" id="page-reports">
-            <div id="reportsContent"></div>
-        </section>
-
-        <!-- ===== QUEUE TRACKER PAGE ===== -->
-        <section class="page-section" id="page-queue">
-            <div id="queueContent"></div>
-        </section>
-
-        <!-- ===== FIND YOUR ROOM PAGE ===== -->
-        <section class="page-section" id="page-findroom">
-            <div id="findroomContent"></div>
-        </section>
-
-        <!-- ===== BUILDINGS PAGE ===== -->
-        <section class="page-section" id="page-buildings">
-            <div id="buildingsContent"></div>
-        </section>
-
-        <!-- ===== PROFILE PAGE ===== -->
-        <section class="page-section" id="page-profile">
-            <div id="profileContent"></div>
-        </section>
-
     </main>
 
     <!-- ===== TOAST ===== -->
@@ -185,10 +198,8 @@
         </div>
     </div>
 
-        <!-- ===== DARK MODE TOGGLE BUTTON ===== -->
-    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
-        🌙
-    </button>
+    <!-- ===== DARK MODE TOGGLE BUTTON ===== -->
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="dashboard-script.js"></script>
