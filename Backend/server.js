@@ -148,6 +148,8 @@ app.post("/api/report", async (req, res) => {
         });
     }
 });
+
+//for admin
 app.delete("/api/report/:id", async (req, res) => {
     try {
         const result = await reportsCollection.deleteOne({
@@ -162,57 +164,42 @@ app.delete("/api/report/:id", async (req, res) => {
         });
     }
 });
-
-
-
-
-app.get("/api/auth", async (req, res) => {
+app.delete("/api/report/:building", async (req, res) => {
     try {
-        const profiles = await profilesCollection.findOne({
-            username: req.body.username,
-            password: req.body.password
-        });
-
-        if (profiles == null) {
-            res.send("Invalid Username or Password")
-        } else {
-            res.json({
-                username: profiles.username,
-                email: profiles.email,
-                role: profiles.role,
-                image: profiles.image,
-            });
-        }
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-app.post("/api/register", async (req, res) => {
-    try {
-        const result = await profilesCollection.insertOne(req.body);
-
-        res.status(201).json({
-            message: "Profile received!",
-            insertedId: result.insertedId
-        });
-
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-});
-app.delete("/api/profile", async (req, res) => {
-    try {
-        const result = await profilesCollection.deleteOne({
-            username: req.body.username,
-            password: req.body.password
+        const result = await reportsCollection.deleteOne({
+            building: req.params.building
         });
 
         res.json(result);
+        console.log(result);
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
+});
+app.delete("/api/report/:queueLength", async (req, res) => {
+    try {
+        const result = await reportsCollection.deleteOne({
+            queueLength: req.params.queueLength
+        });
 
+        res.json(result);
+        console.log(result);
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
+});
+app.delete("/api/report/:userId", async (req, res) => {
+    try {
+        const result = await reportsCollection.deleteOne({
+            userId: req.params.userId
+        });
+
+        res.json(result);
+        console.log(result);
     } catch (err) {
         res.status(500).json({
             error: err.message
@@ -220,8 +207,45 @@ app.delete("/api/profile", async (req, res) => {
     }
 });
 
+app.get("/api/report/:building", async (req, res) => {
+    try {
+        const result = await reportsCollection.find({
+            building: req.params.building
+        }).toArray();
 
+        res.json(result);
+        console.log(result);
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
+});
+app.get("/api/report/:queueLength", async (req, res) => {
+    try {
+        const result = await reportsCollection.find({
+            queueLength: req.params.queueLength
+        }).toArray();
 
+        res.json(result);
+        console.log(result);
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
+});
+app.get("/api/report/all", async (req, res) => {
+    try {
+        const report = await reportsCollection.find().toArray();
+        res.json(report);
+        console.log(report);
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
+});
 
 async function StartServer() {
     await MongoConnect();
