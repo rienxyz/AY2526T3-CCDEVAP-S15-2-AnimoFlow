@@ -314,7 +314,7 @@ npm install
 
 ---
 
-## 📝 Limitations (Documented for Submission)
+##  Limitations (Documented for Submission)
 
 | Limitation | Description |
 |------------|-------------|
@@ -326,7 +326,7 @@ npm install
 
 ---
 
-## 👥 Contributors
+##  Contributors
 
 - Fernandez, Rimmuel James
 - Casihan, Sofron Dominic
