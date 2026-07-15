@@ -32,8 +32,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const toastBody = toastElement.querySelector('.toast-body');
         if (toastBody) toastBody.innerHTML = message;
         toastElement.style.background = type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#006837';
-        if (type === 'warning') toastElement.querySelector('.toast-body').style.color = '#1a2b1a';
-        else toastElement.querySelector('.toast-body').style.color = 'white';
+        if (type === 'warning') {
+            toastElement.querySelector('.toast-body').style.color = '#1a2b1a';
+        } else {
+            toastElement.querySelector('.toast-body').style.color = 'white';
+        }
         bsToast.show();
     }
 
@@ -79,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         const email = adminEmail.value.trim();
         const password = adminPassword.value.trim();
+        
         if (!email) { showToast('Please enter your admin email', 'error'); adminEmail.focus(); return; }
         if (!password) { showToast('Please enter your password', 'error'); adminPassword.focus(); return; }
         if (password.length < 8) { showToast('Password must be at least 8 characters', 'error'); adminPassword.focus(); return; }
@@ -87,18 +91,20 @@ document.addEventListener('DOMContentLoaded', function() {
         adminLoginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Verifying...';
 
         try {
-            const response = await fetch('http://localhost:3999/api/admin/login', {
+            const response = await fetch('http://localhost:3999/api/auth/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
+            
             const data = await response.json();
+            
             if (response.ok && data.success) {
                 // Store admin session
                 localStorage.setItem('animoflow_admin_token', data.token);
                 localStorage.setItem('animoflow_admin_user', JSON.stringify(data.user));
                 
-                // ALSO set regular user info so dashboard recognizes admin
+                // Also set regular user info for dashboard
                 localStorage.setItem('animoflow_user', JSON.stringify({
                     email: data.user.email,
                     role: 'admin',
@@ -115,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 adminPassword.focus();
             }
         } catch (err) {
+            console.error('Admin login error:', err);
             showToast('❌ Server error. Make sure the backend is running.', 'error');
             adminLoginBtn.disabled = false;
             adminLoginBtn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Login as Admin';
@@ -132,15 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
         backToDashboardBtn.addEventListener('click', function() {
             window.location.href = 'dashboard-index.html';
         });
-    }
-
-    // Check for logout parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('logout') === 'true') {
-        localStorage.removeItem('animoflow_admin_token');
-        localStorage.removeItem('animoflow_admin_user');
-        localStorage.removeItem('animoflow_user');
-        showToast('Logged out of admin session', 'info');
     }
 
     console.log('[AnimoFlow] Admin Login page initialized');
