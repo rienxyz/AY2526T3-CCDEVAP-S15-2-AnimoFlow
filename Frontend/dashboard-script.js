@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const activeReports = await response.json();
 
             const activeReportsEl = document.getElementById('dashActiveReports');
-            activeReportsEl.textContent = activeReports.length; // <-- Line 176
+            activeReportsEl.textContent = activeReports.length;
 
             const longQueues = activeReports.filter(r => r.queueLength === 'long');
             const buildingsWithLong = new Set(longQueues.map(r => r.building));
@@ -177,12 +177,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     userEmail = user.email;
                 } catch (e) {}
             }
-            let userReports = [];
-            if (userEmail && userEmail !== 'guest_user') {
-                userReports = reports.filter(r => r.userId === userEmail);
-            } else {
-                userReports = reports;
-            }
+
+            const response2 = await fetch("http://localhost:3999/api/report/guest");
+            const userReports = await response2.json();
             const yourReportsEl = document.getElementById('dashYourReports');
             if (yourReportsEl) yourReportsEl.textContent = userReports.length;
 
