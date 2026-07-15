@@ -1,69 +1,69 @@
 # AnimoFlow - DLSU Elevator Queue Management System
 
-## 📖 Overview
+##  Overview
 AnimoFlow is a real-time crowd-sourced elevator queue management system designed for the De La Salle University (DLSU) community. It allows students, faculty, and staff to report elevator queue lengths, view building information, and navigate the campus efficiently.
 
 ---
 
-## ✨ Features
+##  Features
 
-### 🔐 Authentication
+###  Authentication
 - DLSU email login (`@dlsu.edu.ph`)
 - Guest view-only mode
 - Admin panel with full CRUD operations
 
-### 📊 Dashboard
+###  Dashboard
 - Real-time reports overview with live statistics
 - Chart.js visualizations (Reports by Building, Queue Status Distribution)
 - Recent activity feed showing latest submissions
 
-### 🏢 Reports
+###  Reports
 - Submit elevator queue reports (Short/Medium/Long)
 - Dynamic elevator dropdown based on building selection
 - View recent reports from the last 30 minutes
 - Guest users can view reports but cannot submit
 
-### 📈 Queue Tracker
+###  Queue Tracker
 - Live status of all 10 campus buildings
 - Color-coded traffic indicators (🟢 Light / 🟡 Moderate / 🔴 Heavy)
 - Filter by building or queue status
 - Click on any building card to filter reports
 
-### 🔍 Find Your Room
+###  Find Your Room
 - Search by room code (e.g., LS305) or building name
 - Get walking directions from any campus gate
 - Visual route guidance with images
 
-### 🏛️ Buildings
+###  Buildings
 - Complete building directory with descriptions
 - Building images and floor information
 - Elevator count and availability
 
-### 🗺️ Campus Map
+###  Campus Map
 - Interactive map with building markers
 - Click markers for detailed building information
 - Hover for building names
 
-### 👤 Profile
+###  Profile
 - User statistics (total reports, active reports)
 - Recent activity history
 - Dark mode toggle
 - Email notification and auto-refresh preferences
 
-### 🔒 Admin Panel
+###  Admin Panel
 - DataTables for report management
 - Delete individual reports or clear all
 - Analytics charts (Reports by Building, Queue Status Distribution)
 - User activity monitoring
 - **Access:** `admin@dlsu.edu.ph` / `admin123`
 
-### 🌙 Dark Mode
+###  Dark Mode
 - Toggle dark/light theme across all pages
 - Preference saved in local storage
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -77,7 +77,7 @@ AnimoFlow is a real-time crowd-sourced elevator queue management system designed
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 animoflow/
@@ -138,7 +138,7 @@ animoflow/
 
 ---
 
-## 🚀 Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 
@@ -211,7 +211,7 @@ npm run dev
 
 ---
 
-## 🔑 Default Accounts
+##  Default Accounts
 
 ### Admin Account
 | Field | Value |
