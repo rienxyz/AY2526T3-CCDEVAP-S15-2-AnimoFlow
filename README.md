@@ -17,18 +17,6 @@ Before running the project, make sure you have the following installed:
 
 ---
 
-Start the backend development:
-
-```bash
-cd Backend
-npm install
-docker compose up -d
-node seed-directions.js
-node server.js
-```
-
----
-
 ## MongoDB Setup
 
 1. Navigate to the directory containing the `docker-compose.yml` file.
@@ -48,6 +36,16 @@ docker compose ps
 MongoDB credentials (username and password) are already configured in the project's Docker Compose configuration.
 
 ---
+
+Start the backend development:
+
+```bash
+cd Backend
+npm install
+docker compose up -d
+node seed-directions.js
+node server.js
+```
 
 If both the frontend and backend are included in the project, ensure the MongoDB container is running before starting the application.
 
