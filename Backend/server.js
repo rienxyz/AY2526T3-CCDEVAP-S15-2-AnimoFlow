@@ -153,7 +153,7 @@ app.post("/api/report", async (req, res) => {
 app.delete("/api/report/:id", async (req, res) => {
     try {
         const result = await reportsCollection.deleteOne({
-            _id: new ObjectId(req.params.id)
+            id: req.params.id
         });
 
         res.json(result);
