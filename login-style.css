@@ -16,7 +16,6 @@ body {
     position: relative;
 }
 
-/* subtle green accent bar at top */
 body::before {
     content: "";
     position: fixed;
@@ -28,7 +27,6 @@ body::before {
     z-index: 100;
 }
 
-/* Main Card Container */
 .login-wrapper {
     position: relative;
     z-index: 10;
@@ -50,7 +48,6 @@ body::before {
     transform: translateY(-2px);
 }
 
-/* Left Brand Panel - DLSU Green */
 .brand-panel {
     background: #006837;
     padding: 2.5rem 2rem;
@@ -140,7 +137,6 @@ body::before {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Right Form Panel - White */
 .form-panel {
     padding: 2.5rem 2rem;
     background: white;
@@ -161,7 +157,6 @@ body::before {
     padding-bottom: 0.75rem;
 }
 
-/* Input Groups - Removed icons */
 .input-group-custom {
     margin-bottom: 1.5rem;
 }
@@ -185,18 +180,9 @@ body::before {
     color: #1a2b1a;
 }
 
-/* Opaque placeholder text */
 .form-control::placeholder {
     color: #6c7a6c;
     opacity: 1;
-}
-
-.form-control:-ms-input-placeholder {
-    color: #6c7a6c;
-}
-
-.form-control::-ms-input-placeholder {
-    color: #6c7a6c;
 }
 
 .form-control:focus {
@@ -223,7 +209,6 @@ body::before {
     color: #8aa07e;
 }
 
-/* Checkbox styling */
 .form-check-input:checked {
     background-color: #006837;
     border-color: #006837;
@@ -234,7 +219,6 @@ body::before {
     box-shadow: 0 0 0 2px rgba(0, 104, 55, 0.2);
 }
 
-/* Login Button - DLSU Green */
 .login-btn {
     background: #006837;
     border: none;
@@ -256,7 +240,6 @@ body::before {
     transform: translateY(0px);
 }
 
-/* Badge styling - updated green and white theme */
 .badge.bg-light {
     background-color: #edf3ea !important;
     color: #006837 !important;
@@ -268,7 +251,6 @@ body::before {
     color: #006837 !important;
 }
 
-/* Toast - DLSU green style */
 .toast-container .toast {
     background: #006837;
     border-radius: 12px;
@@ -287,7 +269,6 @@ body::before {
     opacity: 0.8;
 }
 
-/* Link styles - DLSU green */
 a {
     color: #006837;
     text-decoration: none;
@@ -300,7 +281,6 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Loading state for button */
 .login-btn.loading {
     opacity: 0.7;
     pointer-events: none;
@@ -324,51 +304,19 @@ a:hover {
     to { transform: rotate(360deg); }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-    body {
-        padding: 1rem;
-    }
-    
-    .brand-panel {
-        padding: 2rem 1.5rem;
-    }
-    
-    .form-panel {
-        padding: 1.75rem 1.5rem;
-    }
-    
-    .brand-panel h2 {
-        font-size: 1.5rem;
-    }
-    
-    .form-panel h3 {
-        font-size: 1.5rem;
-    }
-    
-    .logo-text {
-        font-size: 1.3rem;
-    }
-    
-    .feature-list li {
-        font-size: 0.8rem;
-    }
+    body { padding: 1rem; }
+    .brand-panel { padding: 2rem 1.5rem; }
+    .form-panel { padding: 1.75rem 1.5rem; }
+    .brand-panel h2 { font-size: 1.5rem; }
+    .form-panel h3 { font-size: 1.5rem; }
+    .logo-text { font-size: 1.3rem; }
+    .feature-list li { font-size: 0.8rem; }
 }
 
 @media (max-width: 576px) {
-    .brand-panel {
-        text-align: center;
-    }
-    
-    .tagline {
-        text-align: left;
-    }
-    
-    .logo-badge {
-        justify-content: center;
-    }
-    
-    .feature-list li {
-        justify-content: flex-start;
-    }
+    .brand-panel { text-align: center; }
+    .tagline { text-align: left; }
+    .logo-badge { justify-content: center; }
+    .feature-list li { justify-content: flex-start; }
 }

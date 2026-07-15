@@ -1,9 +1,7 @@
 /**
- * AnimoFlow Profile Page - Partial/Progress Version
+ * AnimoFlow Profile Page - Updated with Navigation
  * Displays user info, activity history, and preferences
- * TODO for completion: Backend API integration, user session, settings persistence
  */
-
 document.addEventListener('DOMContentLoaded', function() {
     
     // ========== DOM Elements ==========
@@ -20,6 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const emailToggle = document.getElementById('emailToggle');
     const autoRefreshToggle = document.getElementById('autoRefreshToggle');
     
+    // Navigation buttons
+    const backBtn = document.getElementById('backToDashboardBtn');
+    const goToReportsBtn = document.getElementById('goToReportsBtn');
+    const goToFindRoomBtn = document.getElementById('goToFindRoomBtn');
+    const goToQueueBtn = document.getElementById('goToQueueBtn');
+    
     // Toast
     const toastElement = document.getElementById('liveToast');
     let bsToast = null;
@@ -31,8 +35,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ========== Helper Functions ==========
+    // ========== Navigation Functions ==========
+    function navigateTo(page) {
+        // Find the sidebar link for this page
+        const navLinks = document.querySelectorAll('.sidebar-nav a');
+        let targetLink = null;
+        
+        navLinks.forEach(link => {
+            if (link.getAttribute('data-page') === page) {
+                targetLink = link;
+            }
+        });
+        
+        if (targetLink) {
+            targetLink.click();
+        } else {
+            // Fallback: try to find by href
+            const pageMap = {
+                'dashboard': 'Dashboard',
+                'reports': 'Reports',
+                'queue': 'Queue Tracker',
+                'findroom': 'Find Your Room',
+                'buildings': 'Buildings'
+            };
+            
+            navLinks.forEach(link => {
+                if (link.textContent.trim() === pageMap[page]) {
+                    targetLink = link;
+                }
+            });
+            
+            if (targetLink) {
+                targetLink.click();
+            } else {
+                showToast('Navigation not available', 'error');
+            }
+        }
+    }
     
+    // ========== Helper Functions ==========
     function showToast(message, type = 'info') {
         if (!bsToast || !toastElement) return;
         const toastBody = toastElement.querySelector('.toast-body');
@@ -67,7 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ========== Load User Profile ==========
     function loadUserProfile() {
-        // Try to get user from localStorage (set during login)
         let userData = localStorage.getItem('animoflow_user');
         let user = null;
         
@@ -80,14 +120,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (user && user.email && user.email !== 'guest_user') {
-            // Real user
             const nameParts = user.email.split('@')[0].split('.');
             const formattedName = nameParts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
             profileName.textContent = formattedName || 'Animo User';
             profileEmail.textContent = user.email;
             profileRole.textContent = 'Student';
             
-            // Set member since from localStorage or use current date
             let joinDate = localStorage.getItem('animoflow_join_date');
             if (!joinDate) {
                 joinDate = Date.now();
@@ -95,14 +133,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             memberSinceEl.textContent = formatDate(joinDate);
         } else {
-            // Guest or default
             profileName.textContent = 'Guest User';
             profileEmail.textContent = 'guest@animoflow.local';
             profileRole.textContent = 'Guest';
             memberSinceEl.textContent = '--';
         }
         
-        // Load report stats
         updateReportStats();
     }
     
@@ -112,7 +148,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const THIRTY_MINUTES = 30 * 60 * 1000;
         const now = Date.now();
         
-        // Get user email from localStorage
         let userData = localStorage.getItem('animoflow_user');
         let userEmail = null;
         if (userData) {
@@ -128,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (userEmail && userEmail !== 'guest_user') {
             userReports = reports.filter(r => r.userId === userEmail);
         } else {
-            // For demo, show all reports if guest
             userReports = reports;
         }
         
@@ -142,8 +176,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== Load Activity ==========
     function loadActivity() {
         const reports = JSON.parse(localStorage.getItem('animoflow_reports') || '[]');
-        
-        // Sort by timestamp descending (newest first)
         const sortedReports = reports.sort((a, b) => b.timestamp - a.timestamp);
         
         if (sortedReports.length === 0) {
@@ -156,7 +188,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Get only last 10 activities
         const recentActivities = sortedReports.slice(0, 10);
         
         let html = '';
@@ -196,17 +227,43 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleDarkMode() {
         const isDark = darkModeToggle.checked;
         document.body.classList.toggle('dark-mode', isDark);
-        localStorage.setItem('animoflow_dark_mode', isDark);
+        localStorage.setItem('animoflow_darkmode', isDark ? 'dark' : 'light');
         showToast(isDark ? 'Dark mode enabled' : 'Light mode enabled', 'info');
     }
     
     function loadDarkModePreference() {
-        const isDark = localStorage.getItem('animoflow_dark_mode') === 'true';
+        const isDark = localStorage.getItem('animoflow_darkmode') === 'dark';
         darkModeToggle.checked = isDark;
         document.body.classList.toggle('dark-mode', isDark);
     }
     
     // ========== Event Listeners ==========
+    
+    // Navigation buttons
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            navigateTo('dashboard');
+        });
+    }
+    
+    if (goToReportsBtn) {
+        goToReportsBtn.addEventListener('click', function() {
+            navigateTo('reports');
+        });
+    }
+    
+    if (goToFindRoomBtn) {
+        goToFindRoomBtn.addEventListener('click', function() {
+            navigateTo('findroom');
+        });
+    }
+    
+    if (goToQueueBtn) {
+        goToQueueBtn.addEventListener('click', function() {
+            navigateTo('queue');
+        });
+    }
+    
     if (refreshBtn) {
         refreshBtn.addEventListener('click', refreshActivity);
     }
@@ -260,6 +317,5 @@ document.addEventListener('DOMContentLoaded', function() {
     loadActivity();
     startAutoRefresh();
     
-    console.log('[AnimoFlow] Profile page initialized - Partial/Progress Version');
-    console.log('[TODO] Backend API integration, user settings persistence, edit profile');
+    console.log('[AnimoFlow] Profile page initialized with navigation');
 });
