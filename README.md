@@ -100,7 +100,7 @@ AnimoFlow is a real-time crowd-sourced elevator queue management system designed
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -341,7 +341,7 @@ curl http://localhost:60136/api/report
 
 ---
 
-## 📡 API Endpoints
+##  API Endpoints
 
 ### Authentication (`/api/auth`)
 
@@ -387,7 +387,7 @@ curl http://localhost:60136/api/report
 
 ---
 
-## 🏛️ Building Elevator Information
+##  Building Elevator Information
 
 | Building | Elevators | Names |
 |----------|-----------|-------|
