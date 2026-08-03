@@ -11,7 +11,7 @@ const directionRoutes = require("./src/routes/directionRoutes");
 const adminRoutes = require("./src/routes/adminRoutes");
 
 const app = express();
-const PORT = process.env.PORT || 3999;
+const PORT = process.env.PORT || 60136;
 
 // Middleware
 app.use(express.json());
