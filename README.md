@@ -16,13 +16,13 @@ AnimoFlow is a real-time crowd-sourced elevator queue management system designed
 - Admin panel with full CRUD operations
 - Session persistence across pages
 
-###  User Dashboard
+### 📊 User Dashboard
 - **Toggleable Charts:** Reports by Building (Bar/Pie) and Queue Status Distribution (Pie/Doughnut)
 - **Line Graph with Filters:** Report trends filterable by Building, Elevator, and Date Range (Today/Week/Month/All Time)
 - **Recent Activity Feed:** Shows latest 5 reports with timestamps
 - **Dark Mode Support:** Toggle dark/light theme across all pages
 
-###  Admin Dashboard
+### 🏢 Admin Dashboard
 - **Statistics Cards:** Total Reports, Active Reports, Buildings Active, Total Users
 - **Toggleable Charts:** Reports by Building (Bar/Pie) and Queue Status Distribution (Pie/Doughnut)
 - **Line Graph with Filters:** Report trends with Building, Elevator, and Date Range filters
@@ -100,7 +100,7 @@ AnimoFlow is a real-time crowd-sourced elevator queue management system designed
 
 ---
 
-##  Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -114,7 +114,7 @@ AnimoFlow is a real-time crowd-sourced elevator queue management system designed
 
 ---
 
-##  Project Structure
+## 📁 Project Structure
 
 ```
 animoflow/
@@ -238,8 +238,8 @@ animoflow/
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/animoflow.git
-cd animoflow
+git clone https://github.com/rienxyz/AY2526T3-CCDEVAP-S15-2-AnimoFlow.git
+cd AY2526T3-CCDEVAP-S15-2-AnimoFlow
 ```
 
 ### Step 2: Start MongoDB with Docker
@@ -266,10 +266,10 @@ npm install
 Create a `.env` file in the `Backend` folder:
 
 ```env
-PORT=3999
-MONGODB_URI=mongodb://admin:password@localhost:27017/?authSource=admin
+PORT=60136
+MONGODB_URI=mongodb://localhost:27017/Main
 DB_NAME=Main
-NODE_ENV=development
+NODE_ENV=production
 ```
 
 ### Step 5: Seed Direction Data (One Time Only)
@@ -292,10 +292,10 @@ npm run dev
 
 | Page | URL |
 |------|-----|
-| **Login** | `http://localhost:3999/login.html` |
-| **User Dashboard** | `http://localhost:3999/user/dashboard.html` |
-| **Admin Login** | `http://localhost:3999/admin-login.html` |
-| **Admin Dashboard** | `http://localhost:3999/admin/dashboard.html` |
+| **Login** | `http://localhost:60136/login.html` |
+| **User Dashboard** | `http://localhost:60136/user/dashboard.html` |
+| **Admin Login** | `http://localhost:60136/admin-login.html` |
+| **Admin Dashboard** | `http://localhost:60136/admin/dashboard.html` |
 
 ---
 
@@ -314,7 +314,40 @@ npm run dev
 
 ---
 
-##  API Endpoints
+## 🌐 CCS Cloud Deployment
+
+### Server Access
+
+```bash
+# SSH into the server
+ssh -p 60436 root@10.2.14.36
+# Password: lBm0PPk15Lfo
+
+# SSH Tunnel for browser access (from anywhere)
+ssh -p 60436 -L 60136:localhost:60136 testuser@ccscloud.dlsu.edu.ph
+# Then open: http://localhost:60136
+```
+
+### Deployment Commands
+
+```bash
+# Start MongoDB
+systemctl start mongod
+systemctl enable mongod
+
+# Start Backend
+cd ~/AY2526T3-CCDEVAP-S15-2-AnimoFlow/Backend
+pm2 start npm --name "animoflow-backend" -- start
+pm2 save
+
+# Check Status
+pm2 list
+curl http://localhost:60136/api/report
+```
+
+---
+
+## 📡 API Endpoints
 
 ### Authentication (`/api/auth`)
 
@@ -360,7 +393,7 @@ npm run dev
 
 ---
 
-##  Building Elevator Information
+## 🏛️ Building Elevator Information
 
 | Building | Elevators | Names |
 |----------|-----------|-------|
@@ -377,24 +410,55 @@ npm run dev
 
 ---
 
-## 📊 Test Data Generator
+##  Test Data Generator
 
-To populate charts with test data, use the data generator tool.
+To populate charts with test data, run this in your browser console (F12):
 
-### Method 1: Browser Console (Quick)
+```javascript
+(async function generateTestData() {
+    const API_URL = 'http://localhost:60136/api/report';
+    const buildings = ['St. La Salle Hall','Henry Sy Hall','Yuchengco Hall','St. Joseph Hall','Velasco Hall','St. Miguel Hall','Gokongwei Hall','STRC','Razon Sports Center','Andrew Gonzalez Hall'];
+    const elevators = {
+        'St. La Salle Hall': ['LS-East-1','LS-East-2','LS-West-1','LS-West-2'],
+        'Henry Sy Hall': ['H-Ground-A','H-Ground-B','H-Ground-C','H-6th-A','H-6th-B'],
+        'Yuchengco Hall': ['Y-A','Y-B','Y-C'],
+        'St. Joseph Hall': ['SJ-1'],
+        'Velasco Hall': ['V-1'],
+        'St. Miguel Hall': ['M-1'],
+        'Gokongwei Hall': [],
+        'STRC': ['STRC-1'],
+        'Razon Sports Center': ['R-A','R-B','R-C'],
+        'Andrew Gonzalez Hall': ['A-Public-1','A-Public-2','A-Public-3','A-Public-4','A-Staff']
+    };
+    const users = ['student1@dlsu.edu.ph','student2@dlsu.edu.ph','student3@dlsu.edu.ph','faculty1@dlsu.edu.ph','faculty2@dlsu.edu.ph','staff1@dlsu.edu.ph'];
+    const statuses = ['short','medium','long'];
 
-1. Open any AnimoFlow page
-2. Press **F12** to open Developer Tools
-3. Go to the **Console** tab
-4. Paste the Data Generator script (see `generate-data.html`)
-5. Press Enter
-6. Refresh your dashboard
+    function randomChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function randomDate(daysBack) { return Date.now() - (Math.random() * daysBack * 86400000); }
 
-### Method 2: HTML Page
-
-1. Open `http://localhost:3999/generate-data.html`
-2. Click **"Generate Test Data"**
-3. Go back to your dashboard and refresh
+    let success = 0;
+    for (let i = 0; i < 50; i++) {
+        const building = randomChoice(buildings);
+        const elevList = elevators[building] || [];
+        if (elevList.length === 0) continue;
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    building: building,
+                    elevator: randomChoice(elevList),
+                    queueLength: randomChoice(statuses),
+                    userId: randomChoice(users),
+                    timestamp: randomDate(7)
+                })
+            });
+            if (response.ok) success++;
+        } catch(e) {}
+    }
+    console.log(`✅ Generated ${success} test reports! Refresh your dashboard.`);
+})();
+```
 
 ---
 
@@ -403,53 +467,86 @@ To populate charts with test data, use the data generator tool.
 ### MongoDB Connection Refused
 
 ```bash
-docker-compose up -d
-docker logs mongodb
+systemctl start mongod
+systemctl enable mongod
 ```
 
-### Port 3999 Already in Use
+### Backend Not Running
 
 ```bash
-# Windows
-netstat -ano | findstr :3999
-taskkill /PID <PID> /F
+pm2 start animoflow-backend
+pm2 save
+```
 
-# Mac/Linux
-lsof -i :3999
-kill -9 <PID>
+### Port Already in Use
+
+```bash
+# Check what's using port 60136
+netstat -tlnp | grep 60136
+
+# Kill the process
+kill -9 [PID]
 ```
 
 ### Cannot Find Module
 
 ```bash
+cd ~/AY2526T3-CCDEVAP-S15-2-AnimoFlow/Backend
 rm -rf node_modules
 npm install
 ```
 
-### Page Not Loading After File Structure Changes
+### Login Error "Server error"
 
 ```bash
-# Clear browser cache
-Ctrl + Shift + Delete
-
-# Hard refresh
-Ctrl + F5
+# Make sure frontend points to correct port
+cd ~/AY2526T3-CCDEVAP-S15-2-AnimoFlow/Frontend
+sed -i 's/localhost:3999/localhost:60136/g' *.js
+sed -i 's/localhost:3999/localhost:60136/g' user/*.js
+sed -i 's/localhost:3999/localhost:60136/g' admin/*.js
 ```
 
-### Dark Mode Not Working
+---
 
-```bash
-# Make sure dark-mode.css is in the correct location
-Frontend/public/css/dark-mode.css
-```
+##  Phase 3 Changes Summary
 
-### Reports Not Showing
+### File Structure
+- Reorganized into role-based structure (`user/`, `admin/`)
+- Renamed all files for consistency
+- Moved login pages to root
+- Created `public/` for shared assets
+- Created `shared/` for utility files
 
-```bash
-# Reports auto-delete after 30 minutes by design
-# Submit a new report to see data
-# Or use the Data Generator tool
-```
+### User Dashboard
+- Removed redundant stats cards (moved to Profile)
+- Added toggleable charts (Bar/Pie, Pie/Doughnut)
+- Added line graph with filters (Building, Elevator, Date Range)
+
+### User Profile
+- Added quick stats (Buildings, Elevators, Active Days)
+- Added charts (Your Reports by Building, Your Queue Status)
+- Added contribution summary with status breakdown
+- Removed email notifications toggle
+
+### Admin Panel
+- Added full CRUD operations (Reports, Users, Buildings)
+- Added toggleable charts
+- Added line graph with filters
+- Added quick action cards
+
+### UI/UX
+- Added sticky navbar on all pages
+- Fixed dark mode on all pages
+- Improved campus map readability
+- Consistent navbar across all pages
+
+### Known Limitations
+- Passwords stored in plain text in the database
+- No persistent session management implemented
+- No password hashing implemented
+- Basic form validation only
+
+---
 
 ##  Contributors
 
