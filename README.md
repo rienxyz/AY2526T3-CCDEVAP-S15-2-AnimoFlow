@@ -16,13 +16,13 @@ AnimoFlow is a real-time crowd-sourced elevator queue management system designed
 - Admin panel with full CRUD operations
 - Session persistence across pages
 
-### 📊 User Dashboard
+###  User Dashboard
 - **Toggleable Charts:** Reports by Building (Bar/Pie) and Queue Status Distribution (Pie/Doughnut)
 - **Line Graph with Filters:** Report trends filterable by Building, Elevator, and Date Range (Today/Week/Month/All Time)
 - **Recent Activity Feed:** Shows latest 5 reports with timestamps
 - **Dark Mode Support:** Toggle dark/light theme across all pages
 
-### 🏢 Admin Dashboard
+###  Admin Dashboard
 - **Statistics Cards:** Total Reports, Active Reports, Buildings Active, Total Users
 - **Toggleable Charts:** Reports by Building (Bar/Pie) and Queue Status Distribution (Pie/Doughnut)
 - **Line Graph with Filters:** Report trends with Building, Elevator, and Date Range filters
@@ -114,7 +114,7 @@ AnimoFlow is a real-time crowd-sourced elevator queue management system designed
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 animoflow/
@@ -308,7 +308,7 @@ npm run dev
 
 ---
 
-## 🌐 CCS Cloud Deployment
+##  CCS Cloud Deployment
 
 ### Server Access
 
