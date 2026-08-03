@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb");
 
-const uri = process.env.MONGODB_URI || "mongodb://admin:password@localhost:27017/?authSource=admin";
+const uri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME || "Main";
 
 let db = null;
