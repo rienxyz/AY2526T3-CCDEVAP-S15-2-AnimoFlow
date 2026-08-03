@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== Load Queue Data ==========
     async function loadQueueData() {
         try {
-            const response = await fetch("http://localhost:3999/api/report");
+            const response = await fetch("http://localhost:60136/api/report");
             const activeReports = await response.json();
             
             const latestReportsMap = new Map();
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const buildingFilter = document.getElementById('filterBuilding').value;
             const statusFilter = document.getElementById('filterStatus').value;
 
-            const response = await fetch("http://localhost:3999/api/report");
+            const response = await fetch("http://localhost:60136/api/report");
             let filtered = await response.json();
             
             if (buildingFilter !== 'all') {

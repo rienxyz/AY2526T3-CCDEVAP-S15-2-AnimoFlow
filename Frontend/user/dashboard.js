@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===== DASHBOARD DATA =====
     async function updateDashboard() {
         try {
-            const response = await fetch("http://localhost:3999/api/report");
+            const response = await fetch("http://localhost:60136/api/report");
             const activeReports = await response.json();
             
             allReportsForTrend = activeReports;

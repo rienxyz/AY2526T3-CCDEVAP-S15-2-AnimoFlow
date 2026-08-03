@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('[Users] Fetching users with token...');
             
-            const response = await fetch("http://localhost:3999/api/admin/users", {
+            const response = await fetch("http://localhost:60136/api/admin/users", {
                 headers: { 
                     'Authorization': 'Bearer ' + token,
                     'Content-Type': 'application/json'
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            const response = await fetch('http://localhost:3999/api/admin/users/role', {
+            const response = await fetch('http://localhost:60136/api/admin/users/role', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

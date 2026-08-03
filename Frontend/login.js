@@ -1,6 +1,22 @@
 /**
- * AnimoFlow Login Page - With Backend Authentication
+ * AnimoFlow - Login Page
+ * 
+ * Description: Authentication page for user login. Supports DLSU email
+ *              login, guest access, and admin login redirection.
+ * 
+ * Features:
+ *   - DLSU email validation (@dlsu.edu.ph)
+ *   - Password validation (minimum 8 characters)
+ *   - Guest mode (view only)
+ *   - Auto-registration for new users
+ *   - Admin detection and redirection
+ *   - Dark mode support
+ * 
+ * API: POST /api/auth/login, POST /api/auth/admin/login
+ * Author: AnimoFlow Team
+ * Date: August 2026
  */
+
 document.addEventListener('DOMContentLoaded', function() {
     
     const loginForm = document.getElementById('loginForm');
@@ -88,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            const response = await fetch('http://localhost:3999/api/auth/login', {
+            const response = await fetch('http://localhost:60136/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            const reportsResponse = await fetch("http://localhost:3999/api/report/all", {
+            const reportsResponse = await fetch("http://localhost:60136/api/report/all", {
                 headers: { 'Authorization': 'Bearer ' + token }
             });
             
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             allReports = await reportsResponse.json();
             
-            const usersResponse = await fetch("http://localhost:3999/api/admin/users", {
+            const usersResponse = await fetch("http://localhost:60136/api/admin/users", {
                 headers: { 'Authorization': 'Bearer ' + token }
             });
             
@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             const token = localStorage.getItem('animoflow_admin_token');
-            const response = await fetch('http://localhost:3999/api/admin/reports/all', {
+            const response = await fetch('http://localhost:60136/api/admin/reports/all', {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + token }
             });

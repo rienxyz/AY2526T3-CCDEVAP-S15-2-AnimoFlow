@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== Load Reports ==========
     async function loadReports() {
         try {
-            const response = await fetch("http://localhost:3999/api/report");
+            const response = await fetch("http://localhost:60136/api/report");
             if (!response.ok) throw new Error("Failed to fetch reports");
             const reports = await response.json();
             const latestReportsMap = new Map();
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         async function submitToAPI() {
             try {
-                const response = await fetch("http://localhost:3999/api/report", {
+                const response = await fetch("http://localhost:60136/api/report", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(newReport)

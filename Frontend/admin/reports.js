@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            const response = await fetch("http://localhost:3999/api/report/all", {
+            const response = await fetch("http://localhost:60136/api/report/all", {
                 headers: { 'Authorization': 'Bearer ' + token }
             });
             
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             const token = localStorage.getItem('animoflow_admin_token');
-            const response = await fetch(`http://localhost:3999/api/report/id/${id}`, {
+            const response = await fetch(`http://localhost:60136/api/report/id/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + token }
             });
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const token = localStorage.getItem('animoflow_admin_token');
             
-            const deleteRes = await fetch(`http://localhost:3999/api/report/id/${id}`, {
+            const deleteRes = await fetch(`http://localhost:60136/api/report/id/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + token }
             });
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 userId: oldReport ? oldReport.userId : 'admin'
             };
 
-            const createRes = await fetch('http://localhost:3999/api/report', {
+            const createRes = await fetch('http://localhost:60136/api/report', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             const token = localStorage.getItem('animoflow_admin_token');
-            const response = await fetch('http://localhost:3999/api/admin/reports/all', {
+            const response = await fetch('http://localhost:60136/api/admin/reports/all', {
                 method: 'DELETE',
                 headers: { 'Authorization': 'Bearer ' + token }
             });
