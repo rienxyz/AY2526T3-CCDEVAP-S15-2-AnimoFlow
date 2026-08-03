@@ -247,12 +247,6 @@ cd animoflow
 ```bash
 # Navigate to Backend folder
 cd Backend
-
-# Start MongoDB container in detached mode
-docker-compose up -d
-
-# Verify MongoDB is running
-docker ps
 ```
 
 ### Step 3: Install Backend Dependencies
