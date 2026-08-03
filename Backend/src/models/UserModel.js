@@ -39,6 +39,7 @@ class UserModel {
         return await db.collection(COLLECTION).deleteOne({ email: email.toLowerCase() });
     }
 
+    // ===== MAKE SURE THIS METHOD EXISTS =====
     static async findAll() {
         const db = getDB();
         return await db.collection(COLLECTION).find().toArray();

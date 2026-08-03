@@ -7,7 +7,9 @@ const ADMIN_CREDENTIALS = [
     { email: 'admin.animoflow@dlsu.edu.ph', password: 'admin123' }
 ];
 
+// Export validTokens so adminRoutes can access it
 const validTokens = new Map();
+exports.validTokens = validTokens;
 
 exports.register = async (req, res) => {
     try {
@@ -55,7 +57,7 @@ exports.login = async (req, res) => {
         let user = await UserModel.findByEmail(email);
 
         if (!user) {
-            // Auto-register user (as per limitation - no password hashing)
+            // Auto-register user
             user = await UserModel.create({ 
                 email, 
                 password, 
@@ -107,7 +109,7 @@ exports.adminLogin = async (req, res) => {
             const token = Buffer.from(email + ':' + Date.now()).toString('base64');
             validTokens.set(token, {
                 email: user.email,
-                expires: Date.now() + 3600000
+                expires: Date.now() + 3600000 // 1 hour
             });
             return res.json({
                 success: true,
@@ -129,7 +131,7 @@ exports.adminLogin = async (req, res) => {
         const token = Buffer.from(email + ':' + Date.now()).toString('base64');
         validTokens.set(token, {
             email: admin.email,
-            expires: Date.now() + 3600000
+            expires: Date.now() + 3600000 // 1 hour
         });
 
         res.json({
@@ -148,18 +150,19 @@ exports.verifyAdmin = async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ error: "No token provided" });
+            return res.status(401).json({ valid: false, error: "No token provided" });
         }
 
         const token = authHeader.replace('Bearer ', '');
         const tokenData = validTokens.get(token);
+        
         if (!tokenData) {
-            return res.status(401).json({ error: "Invalid token" });
+            return res.status(401).json({ valid: false, error: "Invalid token" });
         }
 
         if (tokenData.expires < Date.now()) {
             validTokens.delete(token);
-            return res.status(401).json({ error: "Token expired" });
+            return res.status(401).json({ valid: false, error: "Token expired" });
         }
 
         res.json({ 
@@ -169,7 +172,8 @@ exports.verifyAdmin = async (req, res) => {
         });
 
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error("Verify error:", err);
+        res.status(500).json({ error: err.message, valid: false });
     }
 };
 
