@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimoFlow · Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/dark-mode.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <style>
+        body { padding-top: 70px; }
+        @media (max-width: 768px) { body { padding-top: 60px; } }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e8ede6;
+            transition: all 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        .stat-icon.bg-primary { background: #006837; }
+        .stat-icon.bg-success { background: #28a745; }
+        .stat-icon.bg-warning { background: #ffc107; }
+        .stat-icon.bg-danger { background: #dc3545; }
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a2b1a;
+            line-height: 1.2;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: #8aa07e;
+        }
+
+        body.dark-mode .stat-card {
+            background: #1e2a4a;
+            border-color: #2a3a5a;
+        }
+        body.dark-mode .stat-number {
+            color: #e8e8e8;
+        }
+        body.dark-mode .stat-label {
+            color: #a8b8c8;
+        }
+
+        .card-custom {
+            background: white;
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        .card-header-custom {
+            background: transparent;
+            border-bottom: 1px solid #e8ede6;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #006837;
+        }
+
+        body.dark-mode .card-custom {
+            background: #1e2a4a;
+        }
+        body.dark-mode .card-header-custom {
+            color: #64b5f6;
+            border-bottom-color: #2a3a5a;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 4px;
+        }
+        .btn-chart-toggle {
+            background: transparent;
+            border: 1px solid #d4dfcd;
+            border-radius: 6px;
+            padding: 0.15rem 0.6rem;
+            font-size: 0.7rem;
+            color: #6c7a6c;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-chart-toggle:hover {
+            background: #e8f3ef;
+            border-color: #006837;
+            color: #006837;
+        }
+        .btn-chart-toggle.active {
+            background: #006837;
+            border-color: #006837;
+            color: white;
+        }
+
+        body.dark-mode .btn-chart-toggle {
+            color: #a8b8c8;
+            border-color: #2a4a6a;
+        }
+        body.dark-mode .btn-chart-toggle:hover {
+            background: #1a3a5a;
+            border-color: #4a7a9a;
+            color: #64b5f6;
+        }
+        body.dark-mode .btn-chart-toggle.active {
+            background: #1a4a7a;
+            border-color: #4a7a9a;
+            color: white;
+        }
+
+        .chart-filters select {
+            background: white;
+            border: 1px solid #d4dfcd;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            color: #1a2b1a;
+            min-width: 100px;
+        }
+        .chart-filters select:focus {
+            border-color: #006837;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 104, 55, 0.1);
+        }
+
+        body.dark-mode .chart-filters select {
+            background: #1a2a4a;
+            border-color: #2a4a6a;
+            color: #e8e8e8;
+        }
+
+        .btn-apply-filter {
+            background: #006837;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .btn-apply-filter:hover { background: #008a47; }
+
+        .btn-clear-filter {
+            background: transparent;
+            border: 1px solid #d4dfcd;
+            border-radius: 6px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            color: #6c7a6c;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-clear-filter:hover {
+            background: #f0f3ed;
+            border-color: #006837;
+            color: #006837;
+        }
+
+        body.dark-mode .btn-clear-filter {
+            color: #a8b8c8;
+            border-color: #2a4a6a;
+        }
+        body.dark-mode .btn-clear-filter:hover {
+            background: #1a3a5a;
+            color: #64b5f6;
+        }
+
+        .quick-action-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border: 1px solid #e8ede6;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .quick-action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: #006837;
+        }
+        .quick-action-card i {
+            font-size: 2rem;
+            color: #006837;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .quick-action-card span {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1a2b1a;
+        }
+        .quick-action-card small {
+            display: block;
+            font-size: 0.7rem;
+            color: #8aa07e;
+            margin-top: 0.25rem;
+        }
+
+        body.dark-mode .quick-action-card {
+            background: #1e2a4a;
+            border-color: #2a3a5a;
+        }
+        body.dark-mode .quick-action-card span {
+            color: #e8e8e8;
+        }
+        body.dark-mode .quick-action-card small {
+            color: #a8b8c8;
+        }
+        body.dark-mode .quick-action-card i {
+            color: #64b5f6;
+        }
+        body.dark-mode .quick-action-card:hover {
+            border-color: #4a7a9a;
+        }
+
+        /* ===== STICKY NAVBAR ===== */
+        .sticky-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            background: #006837 !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            padding: 0.5rem 1rem;
+            min-height: 60px;
+        }
+        .sticky-navbar .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .sticky-navbar .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+        .sticky-navbar .nav-link:hover,
+        .sticky-navbar .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .sticky-navbar .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .sticky-navbar .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        body.dark-mode .sticky-navbar {
+            background: #0d1b3e !important;
+        }
+        body.dark-mode .sticky-navbar .navbar-brand {
+            color: #e8e8e8 !important;
+        }
+        body.dark-mode .sticky-navbar .nav-link {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        body.dark-mode .sticky-navbar .nav-link:hover,
+        body.dark-mode .sticky-navbar .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        body.dark-mode .sticky-navbar .text-light {
+            color: #a8b8c8 !important;
+        }
+        body.dark-mode .sticky-navbar .btn-outline-light {
+            color: #a8b8c8 !important;
+            border-color: #2a4a6a !important;
+        }
+        body.dark-mode .sticky-navbar .btn-outline-light:hover {
+            background: #1a3a5a !important;
+            color: white !important;
+        }
+
+        /* ===== DARK MODE TOGGLE ===== */
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1002;
+            background: #006837;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        body.dark-mode .dark-mode-toggle {
+            background: #1a4a7a;
+        }
+        @media (max-width: 768px) {
+            .dark-mode-toggle {
+                bottom: 80px;
+                right: 16px;
+                width: 42px;
+                height: 42px;
+                font-size: 1.2rem;
+            }
+        }
+
+        .toast {
+            background: #006837;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border: none;
+        }
+        .toast .toast-body {
+            color: white;
+            font-weight: 500;
+            padding: 0.85rem 1.25rem;
+        }
+        .toast .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+        body.dark-mode .toast {
+            background: #0d1b3e !important;
+            border-color: #2a3a5a !important;
+        }
+        body.dark-mode .toast .toast-body {
+            color: #e8e8e8 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-shield-lock me-2"></i>AnimoFlow Admin
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard.html">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reports.html">
+                            <i class="bi bi-file-text"></i> Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="users.html">
+                            <i class="bi bi-people"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="buildings.html">
+                            <i class="bi bi-building"></i> Buildings
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-light" style="font-size:0.85rem;" id="adminUserEmail">admin@dlsu.edu.ph</span>
+                    <button class="btn btn-outline-light btn-sm" id="adminLogoutBtn">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                    <button class="btn btn-outline-light btn-sm" id="backToMainBtn">
+                        <i class="bi bi-arrow-left"></i> Main
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary"><i class="bi bi-file-text"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="totalReports">0</span>
+                        <span class="stat-label">Total Reports</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success"><i class="bi bi-clock-history"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="activeReports">0</span>
+                        <span class="stat-label">Active (30 min)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning"><i class="bi bi-building"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="buildingsWithReports">0</span>
+                        <span class="stat-label">Buildings Active</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-danger"><i class="bi bi-people-fill"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-number" id="totalUsers">0</span>
+                        <span class="stat-label">Total Users</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="card-custom">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <span><i class="bi bi-bar-chart me-2"></i>Reports by Building</span>
+                        <div class="chart-controls">
+                            <button class="btn-chart-toggle" data-chart="building" data-view="bar">Bar</button>
+                            <button class="btn-chart-toggle active" data-chart="building" data-view="pie">Pie</button>
+                        </div>
+                    </div>
+                    <div class="p-3" style="height:280px;">
+                        <canvas id="buildingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card-custom">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <span><i class="bi bi-pie-chart me-2"></i>Queue Status Distribution</span>
+                        <div class="chart-controls">
+                            <button class="btn-chart-toggle" data-chart="status" data-view="doughnut">Donut</button>
+                            <button class="btn-chart-toggle active" data-chart="status" data-view="pie">Pie</button>
+                        </div>
+                    </div>
+                    <div class="p-3" style="height:280px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Line Chart -->
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card-custom">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <span><i class="bi bi-graph-up me-2"></i>Report Trends</span>
+                        <div class="chart-filters d-flex flex-wrap gap-2 align-items-center">
+                            <select id="trendBuildingFilter" class="form-select-sm">
+                                <option value="all">All Buildings</option>
+                            </select>
+                            <select id="trendElevatorFilter" class="form-select-sm">
+                                <option value="all">All Elevators</option>
+                            </select>
+                            <select id="trendDateFilter" class="form-select-sm">
+                                <option value="today">Today</option>
+                                <option value="week" selected>Last 7 Days</option>
+                                <option value="month">Last 30 Days</option>
+                                <option value="all">All Time</option>
+                            </select>
+                            <button class="btn-apply-filter" id="applyTrendFilter">
+                                <i class="bi bi-funnel"></i> Apply
+                            </button>
+                            <button class="btn-clear-filter" id="clearTrendFilter">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-3" style="height:250px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="quick-action-card" onclick="window.location.href='reports.html'">
+                    <i class="bi bi-file-text"></i>
+                    <span>Manage Reports</span>
+                    <small>View, edit, delete reports</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="quick-action-card" onclick="window.location.href='users.html'">
+                    <i class="bi bi-people"></i>
+                    <span>Manage Users</span>
+                    <small>View, edit user roles</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="quick-action-card" onclick="window.location.href='buildings.html'">
+                    <i class="bi bi-building"></i>
+                    <span>Manage Buildings</span>
+                    <small>View, edit building info</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="quick-action-card" onclick="clearAllReports()">
+                    <i class="bi bi-trash text-danger"></i>
+                    <span>Clear All Reports</span>
+                    <small>Delete all report data</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast align-items-center border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">Notification</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

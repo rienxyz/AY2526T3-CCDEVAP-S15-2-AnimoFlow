@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimoFlow · Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    <link rel="stylesheet" href="admin-login.css">
+</head>
+<body>
+
+    <div class="admin-login-wrapper">
+        <div class="admin-login-card">
+            <div class="admin-logo">
+                <div class="icon"><i class="bi bi-shield-lock"></i></div>
+                <h1>Admin Access</h1>
+                <p>Enter your admin credentials to manage the system</p>
+            </div>
+
+            <form id="adminLoginForm">
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-success">Admin Email</label>
+                    <input type="email" class="form-control" id="adminEmail" 
+                           placeholder="admin@dlsu.edu.ph" value="admin@dlsu.edu.ph" required>
+                    <small class="form-text">Use your admin @dlsu.edu.ph account.</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-success">Password</label>
+                    <input type="password" class="form-control" id="adminPassword" 
+                           placeholder="Enter password" value="admin123" required>
+                    <small class="form-text">Min. 8 characters</small>
+                </div>
+
+                <button type="submit" class="btn-admin-login" id="adminLoginBtn">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login as Admin
+                </button>
+            </form>
+
+            <button class="btn-back" id="backToLoginBtn">
+                <i class="bi bi-arrow-left me-1"></i> Back to Login
+            </button>
+
+            <div class="admin-footer">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Default: admin@dlsu.edu.ph / admin123
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast align-items-center border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">Notification</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="admin-login.js"></script>
+</body>
+</html>

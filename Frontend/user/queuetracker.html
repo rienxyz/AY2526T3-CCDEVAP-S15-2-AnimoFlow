@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimoFlow · Queue Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/dark-mode.css">
+    <link rel="stylesheet" href="queuetracker.css">
+    <style>
+        body {
+            padding-top: 70px;
+            font-family: 'Inter', sans-serif;
+            background: #f5f7f0;
+        }
+        @media (max-width: 768px) { body { padding-top: 60px; } }
+
+        /* ===== FIXED NAVBAR STYLES ===== */
+        .sticky-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            background: #006837 !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            padding: 0.5rem 1rem;
+            min-height: 60px;
+        }
+        .sticky-navbar .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .sticky-navbar .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+        .sticky-navbar .nav-link:hover,
+        .sticky-navbar .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .sticky-navbar .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .sticky-navbar .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        body.dark-mode .sticky-navbar {
+            background: #0d1b3e !important;
+        }
+
+        /* Other styles */
+        .btn-back {
+            background: transparent;
+            border: 1.5px solid #d4dfcd;
+            border-radius: 10px;
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #006837;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-back:hover { background: #e8f3ef; border-color: #006837; }
+        body.dark-mode .btn-back { color: #64b5f6; border-color: #2a4a6a; }
+        body.dark-mode .btn-back:hover { background: #1a3a5a; border-color: #4a7a9a; }
+
+        .building-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 768px) { .building-overview { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 480px) { .building-overview { grid-template-columns: repeat(2, 1fr); } }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #006837;
+            margin-bottom: 0.25rem;
+        }
+        .page-header p { color: #6c7a6c; font-size: 0.9rem; }
+        body.dark-mode .page-header h1 { color: #64b5f6; }
+        body.dark-mode .page-header p { color: #a8b8c8; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="bi bi-bar-chart-steps me-2"></i>AnimoFlow
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="reports.html"><i class="bi bi-file-text"></i> Reports</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="queuetracker.html"><i class="bi bi-bar-chart-line"></i> Queue</a></li>
+                    <li class="nav-item"><a class="nav-link" href="find-room.html"><i class="bi bi-search"></i> Find Room</a></li>
+                    <li class="nav-item"><a class="nav-link" href="buildings.html"><i class="bi bi-building"></i> Buildings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="map.html"><i class="bi bi-map"></i> Map</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.html"><i class="bi bi-person"></i> Profile</a></li>
+                    <li class="nav-item" id="adminNavLink" style="display: none;"><a class="nav-link" href="../admin/dashboard.html"><i class="bi bi-shield-lock"></i> Admin</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-light" style="font-size:0.8rem;" id="navUserEmail">Guest</span>
+                    <button class="btn btn-outline-light btn-sm" id="navLogoutBtn"><i class="bi bi-box-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <div class="page-header mb-4">
+            <h1><i class="bi bi-bar-chart-line me-2"></i>Queue Tracker</h1>
+            <p class="text-muted">Real-time elevator queue status across all DLSU buildings.</p>
+        </div>
+
+        <!-- Building Overview -->
+        <div class="building-overview" id="buildingOverview">
+            <div class="building-card" data-building="St. La Salle Hall">
+                <div class="building-name">St. La Salle Hall</div>
+                <div class="building-status" id="status-ls">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+            <div class="building-card" data-building="Henry Sy Hall">
+                <div class="building-name">Henry Sy Hall</div>
+                <div class="building-status" id="status-henrysy">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+            <div class="building-card" data-building="Yuchengco Hall">
+                <div class="building-name">Yuchengco Hall</div>
+                <div class="building-status" id="status-yuchengco">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+            <div class="building-card" data-building="St. Joseph Hall">
+                <div class="building-name">St. Joseph Hall</div>
+                <div class="building-status" id="status-stjoseph">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+            <div class="building-card" data-building="Velasco Hall">
+                <div class="building-name">Velasco Hall</div>
+                <div class="building-status" id="status-velasco">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+            <div class="building-card" data-building="St. Miguel Hall">
+                <div class="building-name">St. Miguel Hall</div>
+                <div class="building-status" id="status-stmiguel">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+            <div class="building-card" data-building="Gokongwei Hall">
+                <div class="building-name">Gokongwei Hall</div>
+                <div class="building-status" id="status-gokongwei">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+            <div class="building-card" data-building="STRC">
+                <div class="building-name">STRC</div>
+                <div class="building-status" id="status-strc">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+            <div class="building-card" data-building="Razon Sports Center">
+                <div class="building-name">Razon Sports Center</div>
+                <div class="building-status" id="status-razon">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+            <div class="building-card" data-building="Andrew Gonzalez Hall">
+                <div class="building-name">Andrew Gonzalez Hall</div>
+                <div class="building-status" id="status-andrew">
+                    <span class="status-dot status-unknown"></span>
+                    <span class="status-text">No reports</span>
+                </div>
+                <div class="building-elevators">
+                    <span class="elevator-count"><i class="bi bi-elevator"></i> 0 active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Queue Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card-custom">
+                    <div class="card-header-custom d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-list-ul me-2"></i>All Active Queues</span>
+                        <div>
+                            <button class="btn-refresh me-2" id="refreshTrackerBtn">
+                                <i class="bi bi-arrow-repeat"></i> Refresh
+                            </button>
+                            <button class="btn-filter" id="filterBtn">
+                                <i class="bi bi-funnel"></i> Filter
+                            </button>
+                        </div>
+                    </div>
+                    <div class="queue-table-container">
+                        <table class="queue-table" id="queueTable">
+                            <thead>
+                                <tr><th>Building</th><th>Elevator</th><th>Queue Status</th><th>Reported</th></tr>
+                            </thead>
+                            <tbody id="queueTableBody"></tbody>
+                        </table>
+                        <div class="text-center p-5 text-muted" id="emptyQueueTable">
+                            <i class="bi bi-inbox" style="font-size: 2.5rem;"></i>
+                            <p class="mt-2">No active queues. Reports will appear here when submitted.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="row mt-2">
+            <div class="col-12">
+                <div class="card-custom">
+                    <div class="card-header-custom">
+                        <i class="bi bi-info-circle me-2"></i>Queue Status Legend
+                    </div>
+                    <div class="legend-container">
+                        <div class="legend-item">
+                            <span class="status-dot status-short"></span>
+                            <span><strong>Short</strong> · 0-5 people · &lt;2 min wait</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-dot status-medium"></span>
+                            <span><strong>Medium</strong> · 6-10 people · 2-5 min wait</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-dot status-long"></span>
+                            <span><strong>Long</strong> · 11+ people · &gt;5 min wait</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-dot status-unknown"></span>
+                            <span><strong>No Data</strong> · No recent reports</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast align-items-center border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">Notification</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Dark Mode Toggle -->
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="queuetracker.js"></script>
+</body>
+</html>

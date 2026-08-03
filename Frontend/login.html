@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>AnimoFlow · DLSU Elevator & Campus Queue Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="public/css/dark-mode.css">
+    <link rel="stylesheet" href="login.css">
+    <style>
+        /* Additional dark mode styles for login page */
+        body.dark-mode {
+            background: #1a1a2e !important;
+        }
+        body.dark-mode .main-card {
+            background: #1e2a4a !important;
+            border-color: #2a3a5a !important;
+        }
+        body.dark-mode .form-panel {
+            background: #1e2a4a !important;
+        }
+        body.dark-mode .form-panel h3 {
+            color: #64b5f6 !important;
+        }
+        body.dark-mode .form-sub {
+            color: #a8b8c8 !important;
+            border-bottom-color: #2a3a5a !important;
+        }
+        body.dark-mode .form-control {
+            background: #1a2a4a !important;
+            border-color: #2a4a6a !important;
+            color: #e8e8e8 !important;
+        }
+        body.dark-mode .form-control::placeholder {
+            color: #6a7a8a !important;
+        }
+        body.dark-mode .form-control:focus {
+            border-color: #4a7a9a !important;
+            box-shadow: 0 0 0 3px rgba(74,122,154,0.3) !important;
+        }
+        body.dark-mode .form-label {
+            color: #64b5f6 !important;
+        }
+        body.dark-mode .form-text {
+            color: #6a7a8a !important;
+        }
+        body.dark-mode .badge.bg-light {
+            background: #1a3a5a !important;
+            color: #64b5f6 !important;
+        }
+        body.dark-mode .badge.bg-light i {
+            color: #64b5f6 !important;
+        }
+        body.dark-mode .text-muted {
+            color: #a8b8c8 !important;
+        }
+        body.dark-mode .border-top {
+            border-color: #2a3a5a !important;
+        }
+        body.dark-mode .toast {
+            background: #0d1b3e !important;
+            border-color: #2a3a5a !important;
+        }
+        body.dark-mode .toast .toast-body {
+            color: #e8e8e8 !important;
+        }
+        body.dark-mode a:not(.btn) {
+            color: #64b5f6 !important;
+        }
+        body.dark-mode a:not(.btn):hover {
+            color: #90caf9 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="main-card row g-0">
+            <div class="col-lg-6 brand-panel">
+                <div class="logo-badge">
+                    <div class="logo-icon" style="background: white; color: #006837;">
+                        <i class="bi bi-bar-chart-steps"></i>
+                    </div>
+                    <span class="logo-text" style="color: white;">AnimoFlow</span>
+                </div>
+                <h2>Navigate smarter.<br>Less waiting, <span class="highlight">more moving</span>.</h2>
+                <div class="tagline">
+                    Real-time crowd-sourced elevator queues & building indicators for the DLSU community.
+                </div>
+                <ul class="feature-list">
+                    <li><i class="bi bi-elevator"></i> <span>Live elevator queue reports (Short/Med/Long)</span></li>
+                    <li><i class="bi bi-search"></i> <span>Classroom search by building, floor, or room#</span></li>
+                    <li><i class="bi bi-people-fill"></i> <span>Crowd indicators: Light / Moderate / Heavy</span></li>
+                    <li><i class="bi bi-shield-lock"></i> <span>DLSU email login · Guest access ready</span></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-6 form-panel">
+                <h3>Welcome back</h3>
+                <div class="form-sub">Sign in with your DLSU email to contribute or view live updates</div>
+
+                <form id="loginForm" action="#" method="post">
+                    <div class="input-group-custom">
+                        <label for="dlsuEmail">DLSU Email Address</label>
+                        <input type="email" id="dlsuEmail" class="form-control form-control-lg" placeholder="juandelacruz@dlsu.edu.ph" autocomplete="email">
+                        <div id="emailError" class="invalid-feedback d-none">Email must be a valid DLSU address ending with @dlsu.edu.ph</div>
+                        <small class="form-text">Use your official @dlsu.edu.ph account.</small>
+                    </div>
+
+                    <div class="input-group-custom">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="form-control form-control-lg" placeholder="Minimum 8 characters" autocomplete="current-password">
+                        <div id="passwordError" class="invalid-feedback d-none">Password must be at least 8 characters long.</div>
+                        <small class="form-text">Min. 8 characters</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="guestDemo">
+                            <label class="form-check-label text-muted small" for="guestDemo">
+                                Continue as guest (view only)
+                            </label>
+                        </div>
+                        <div>
+                            <a href="#" id="forgotLink" class="small">Forgot password?</a>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="loginBtn" class="btn btn-primary btn-lg w-100 login-btn">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Sign in to AnimoFlow
+                    </button>
+                </form>
+
+                <div class="mt-4 pt-2 text-center border-top">
+                    <p class="small text-muted mb-1">First time? Use your DLSU email to register automatically. <br><strong>@dlsu.edu.ph</strong> required for contributors.</p>
+                    <div class="mt-2">
+                        <span class="badge bg-light me-1"><i class="bi bi-database"></i> crowd-sourced</span>
+                        <span class="badge bg-light"><i class="bi bi-graph-up"></i> near real-time</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+            <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+                <div class="d-flex">
+                    <div class="toast-body" id="toastMessage">Notification message</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

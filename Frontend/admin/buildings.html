@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimoFlow · Manage Buildings</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons (using cdnjs - more reliable) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    
+    <!-- Your Custom CSS -->
+    <link rel="stylesheet" href="../css/dark-mode.css">
+    <link rel="stylesheet" href="shared.css">
+    
+    <style>
+        /* Page specific styles */
+        body { 
+            padding-top: 70px; 
+            font-family: 'Inter', sans-serif;
+            background: #f5f7f0;
+        }
+        
+        @media (max-width: 768px) { 
+            body { padding-top: 60px; } 
+        }
+        
+        /* Card styles */
+        .card-custom {
+            background: white;
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        body.dark-mode .card-custom {
+            background: #1e2a4a;
+        }
+        
+        /* Action buttons */
+        .btn-action {
+            background: transparent;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            color: #6c7a6c;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .btn-action:hover { 
+            background: #e8f3ef; 
+        }
+        
+        .btn-action .bi-pencil { 
+            color: #006837; 
+        }
+        
+        .btn-action .bi-trash { 
+            color: #dc3545; 
+        }
+        
+        .btn-action .bi-pencil:hover { 
+            color: #008a47; 
+        }
+        
+        .btn-action .bi-trash:hover { 
+            color: #c82333; 
+        }
+        
+        body.dark-mode .btn-action:hover { 
+            background: #1a3a5a; 
+        }
+        
+        body.dark-mode .btn-action .bi-pencil { 
+            color: #64b5f6; 
+        }
+        
+        body.dark-mode .btn-action .bi-trash { 
+            color: #ef5350; 
+        }
+        
+        /* DataTables overrides */
+        .dataTables_filter input {
+            border: 1.5px solid #d4dfcd;
+            border-radius: 8px;
+            padding: 0.35rem 0.75rem;
+        }
+        
+        .dataTables_filter input:focus {
+            border-color: #006837;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 104, 55, 0.1);
+        }
+        
+        body.dark-mode .dataTables_filter input {
+            background: #1a2a4a;
+            border-color: #2a4a6a;
+            color: #e8e8e8;
+        }
+        
+        body.dark-mode .dataTables_info,
+        body.dark-mode .dataTables_paginate {
+            color: #a8b8c8 !important;
+        }
+        
+        body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: #a8b8c8 !important;
+        }
+        
+        body.dark-mode .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #1a3a5a !important;
+            color: #64b5f6 !important;
+        }
+        
+        /* Modal dark mode */
+        body.dark-mode .modal-content {
+            background: #1e2a4a;
+            color: #e8e8e8;
+        }
+        
+        body.dark-mode .modal-header {
+            border-bottom-color: #2a3a5a;
+        }
+        
+        body.dark-mode .modal-footer {
+            border-top-color: #2a3a5a;
+        }
+        
+        body.dark-mode .modal .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background: #1a2a4a;
+            border-color: #2a4a6a;
+            color: #e8e8e8;
+        }
+        
+        body.dark-mode .form-control:focus,
+        body.dark-mode .form-select:focus {
+            border-color: #4a7a9a;
+            box-shadow: 0 0 0 3px rgba(74, 122, 154, 0.3);
+        }
+        
+        body.dark-mode .form-label {
+            color: #64b5f6;
+        }
+        
+        body.dark-mode .text-muted {
+            color: #a8b8c8 !important;
+        }
+        
+        /* Toast dark mode */
+        body.dark-mode .toast {
+            background: #0d1b3e !important;
+            border-color: #2a3a5a !important;
+        }
+        
+        body.dark-mode .toast .toast-body {
+            color: #e8e8e8 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="bi bi-shield-lock me-2"></i>AnimoFlow Admin
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reports.html">
+                            <i class="bi bi-file-text"></i> Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="users.html">
+                            <i class="bi bi-people"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="buildings.html">
+                            <i class="bi bi-building"></i> Buildings
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-light btn-sm" id="adminLogoutBtn">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                    <button class="btn btn-outline-light btn-sm" id="backToMainBtn">
+                        <i class="bi bi-arrow-left"></i> Main
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <h2>
+                <i class="bi bi-building me-2"></i>Manage Buildings
+            </h2>
+            <div>
+                <button class="btn btn-success me-2" id="refreshBtn">
+                    <i class="bi bi-arrow-repeat"></i> Refresh
+                </button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBuildingModal">
+                    <i class="bi bi-plus-lg"></i> Add Building
+                </button>
+            </div>
+        </div>
+
+        <!-- Buildings Table -->
+        <div class="card-custom">
+            <div class="card-body p-3">
+                <div class="table-responsive">
+                    <table id="buildingsTable" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Floors</th>
+                                <th>Elevators</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="buildingsTableBody">
+                            <!-- Data will be loaded by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ADD BUILDING MODAL ===== -->
+    <div class="modal fade" id="addBuildingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-lg me-2"></i>Add New Building
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBuildingForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Building Code</label>
+                            <input type="text" class="form-control" id="addBuildingCode" placeholder="e.g. LS" required>
+                            <small class="text-muted">Short code used in room numbers (e.g. LS for La Salle)</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Building Name</label>
+                            <input type="text" class="form-control" id="addBuildingName" placeholder="e.g. St. La Salle Hall" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Number of Floors</label>
+                            <input type="number" class="form-control" id="addBuildingFloors" placeholder="e.g. 4" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Elevators</label>
+                            <input type="text" class="form-control" id="addBuildingElevators" placeholder="e.g. 2 or LS-East-1, LS-East-2" required>
+                            <small class="text-muted">Enter number or list of elevator names</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Description</label>
+                            <textarea class="form-control" id="addBuildingDesc" rows="3" placeholder="Building description..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveBuildingBtn">
+                        <i class="bi bi-check-lg"></i> Add Building
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== EDIT BUILDING MODAL ===== -->
+    <div class="modal fade" id="editBuildingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil me-2"></i>Edit Building
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBuildingForm">
+                        <input type="hidden" id="editBuildingCode">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Building Code</label>
+                            <input type="text" class="form-control" id="editBuildingCodeDisplay" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Building Name</label>
+                            <input type="text" class="form-control" id="editBuildingName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Number of Floors</label>
+                            <input type="number" class="form-control" id="editBuildingFloors" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Elevators</label>
+                            <input type="text" class="form-control" id="editBuildingElevators" required>
+                            <small class="text-muted">Enter number or list of elevator names</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Description</label>
+                            <textarea class="form-control" id="editBuildingDesc" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveEditBuildingBtn">
+                        <i class="bi bi-check-lg"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST NOTIFICATION ===== -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast align-items-center border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">Notification</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== DARK MODE TOGGLE ===== -->
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">🌙</button>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="buildings.js"></script>
+
+</body>
+</html>
