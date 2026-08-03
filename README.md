@@ -314,7 +314,7 @@ npm run dev
 
 ---
 
-## 📡 API Endpoints
+##  API Endpoints
 
 ### Authentication (`/api/auth`)
 
@@ -398,7 +398,7 @@ To populate charts with test data, use the data generator tool.
 
 ---
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### MongoDB Connection Refused
 
