@@ -3,7 +3,7 @@
  * 
  * Description: Manage user account and view contributions. Displays
  *              user statistics, recent activity, contribution charts,
- *              and preferences.
+ *              and preferences including change password functionality.
  * 
  * Features:
  *   - Profile information (name, email, role)
@@ -13,6 +13,7 @@
  *   - Charts (Reports by Building, Queue Status)
  *   - Contribution summary (last 5 reports + status breakdown)
  *   - Preferences (Dark Mode, Auto-Refresh)
+ *   - Change Password (with current password verification)
  *   - Logout button
  * 
  * Charts: Bar chart, Doughnut chart
@@ -84,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.removeItem('animoflow_user');
             localStorage.removeItem('animoflow_admin_token');
             localStorage.removeItem('animoflow_admin_user');
-            window.location.href = 'login.html';
+            window.location.href = '../login.html';
         });
     }
 
@@ -139,11 +140,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function navigateTo(page) {
         const pageMap = {
-            'dashboard': 'dashboard-index.html',
+            'dashboard': 'dashboard.html',
             'reports': 'reports.html',
             'queue': 'queuetracker.html',
-            'findroom': 'find-your-room.html',
-            'buildings': 'buildings-index.html'
+            'findroom': 'find-room.html',
+            'buildings': 'buildings.html'
         };
         const url = pageMap[page];
         if (url) window.location.href = url;
@@ -273,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== Fetch All Reports ==========
     async function fetchAllReports() {
         try {
-            const response = await fetch("http://localhost:3999/api/report");
+            const response = await fetch("/api/report");
             if (!response.ok) throw new Error("Failed to fetch reports");
             const reports = await response.json();
             
@@ -563,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.removeItem('animoflow_admin_token');
             localStorage.removeItem('animoflow_admin_user');
             showToast('Logged out successfully!', 'info');
-            setTimeout(() => { window.location.href = 'login-index.html'; }, 500);
+            setTimeout(() => { window.location.href = '../login.html'; }, 500);
         });
     }
 
@@ -590,6 +591,135 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
+    // ========== CHANGE PASSWORD FUNCTIONALITY ==========
+    // Toggle change password form
+    const showChangePasswordBtn = document.getElementById('showChangePasswordBtn');
+    const changePasswordSection = document.getElementById('changePasswordSection');
+    const cancelChangePasswordBtn = document.getElementById('cancelChangePasswordBtn');
+
+    if (showChangePasswordBtn) {
+        showChangePasswordBtn.addEventListener('click', function() {
+            changePasswordSection.style.display = 'block';
+            this.style.display = 'none';
+        });
+    }
+
+    if (cancelChangePasswordBtn) {
+        cancelChangePasswordBtn.addEventListener('click', function() {
+            changePasswordSection.style.display = 'none';
+            if (showChangePasswordBtn) {
+                showChangePasswordBtn.style.display = 'inline-block';
+            }
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('passwordChangeMessage').style.display = 'none';
+        });
+    }
+
+    // Submit change password
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    const currentPassword = document.getElementById('currentPassword');
+    const newPassword = document.getElementById('newPassword');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const passwordChangeMessage = document.getElementById('passwordChangeMessage');
+
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            passwordChangeMessage.style.display = 'none';
+            passwordChangeMessage.className = '';
+
+            const current = currentPassword.value.trim();
+            const newPwd = newPassword.value.trim();
+            const confirm = confirmPassword.value.trim();
+
+            if (!current || !newPwd || !confirm) {
+                showPasswordMessage('Please fill in all fields.', 'danger');
+                return;
+            }
+
+            if (newPwd.length < 8) {
+                showPasswordMessage('New password must be at least 8 characters.', 'danger');
+                return;
+            }
+
+            if (newPwd !== confirm) {
+                showPasswordMessage('New passwords do not match.', 'danger');
+                return;
+            }
+
+            if (current === newPwd) {
+                showPasswordMessage('New password must be different from current password.', 'warning');
+                return;
+            }
+
+            // Get user email
+            let userData = localStorage.getItem('animoflow_user');
+            let email = '';
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    email = user.email;
+                } catch (e) {}
+            }
+
+            if (!email) {
+                showPasswordMessage('Please login first.', 'danger');
+                return;
+            }
+
+            changePasswordBtn.disabled = true;
+            changePasswordBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Updating...';
+
+            try {
+                const response = await fetch('/api/auth/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        currentPassword: current,
+                        newPassword: newPwd
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showPasswordMessage('✅ Password updated successfully!', 'success');
+                    currentPassword.value = '';
+                    newPassword.value = '';
+                    confirmPassword.value = '';
+                    
+                    // Hide form after success
+                    setTimeout(() => {
+                        changePasswordSection.style.display = 'none';
+                        if (showChangePasswordBtn) {
+                            showChangePasswordBtn.style.display = 'inline-block';
+                        }
+                    }, 2000);
+                } else {
+                    showPasswordMessage('❌ ' + (data.error || 'Failed to update password'), 'danger');
+                }
+            } catch (err) {
+                showPasswordMessage('❌ Server error. Please try again.', 'danger');
+            }
+
+            changePasswordBtn.disabled = false;
+            changePasswordBtn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Update Password';
+        });
+    }
+
+    function showPasswordMessage(message, type) {
+        passwordChangeMessage.style.display = 'block';
+        passwordChangeMessage.className = `alert alert-${type} mt-2`;
+        passwordChangeMessage.innerHTML = message;
+    }
+
     // ========== Initial Load ==========
     loadPreferences();
     loadUserProfile();
@@ -597,5 +727,5 @@ document.addEventListener('DOMContentLoaded', function() {
     loadActivity();
     startAutoRefresh();
     
-    console.log('[AnimoFlow] Profile page enhanced (Phase 3)');
+    console.log('[AnimoFlow] Profile page enhanced with change password');
 });

@@ -1,8 +1,7 @@
 /**
  * AnimoFlow - Login Page
  * 
- * Description: Authentication page for user login. Supports DLSU email
- *              login, guest access, and admin login redirection.
+ * Description: Authentication page for user login.
  * 
  * Features:
  *   - DLSU email validation (@dlsu.edu.ph)
@@ -12,7 +11,7 @@
  *   - Admin detection and redirection
  *   - Dark mode support
  * 
- * API: POST /api/auth/login, POST /api/auth/admin/login
+ * API: POST /api/auth/login
  * Author: AnimoFlow Team
  * Date: August 2026
  */
@@ -40,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Load saved theme
     const savedTheme = localStorage.getItem('animoflow_darkmode');
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-mode');
@@ -65,10 +63,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!bsToast || !toastElement) return;
         const toastBody = toastElement.querySelector('.toast-body');
         if (toastBody) toastBody.innerHTML = message;
-        toastElement.classList.remove('bg-success', 'bg-danger', 'bg-primary');
-        if (type === 'success') toastElement.style.background = '#006837';
-        else if (type === 'error') toastElement.style.background = '#dc3545';
-        else toastElement.style.background = '#006837';
+        toastElement.style.background = type === 'error' ? '#dc3545' : '#006837';
+        if (type === 'error') {
+            toastElement.querySelector('.toast-body').style.color = 'white';
+        }
         bsToast.show();
     }
     
@@ -83,10 +81,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function clearErrors() {
-        if (emailInput) emailInput.classList.remove('is-invalid');
-        if (passwordInput) passwordInput.classList.remove('is-invalid');
-        if (emailErrorDiv) emailErrorDiv.classList.add('d-none');
-        if (passwordErrorDiv) passwordErrorDiv.classList.add('d-none');
+        if (emailInput) {
+            emailInput.classList.remove('is-invalid');
+        }
+        if (passwordInput) {
+            passwordInput.classList.remove('is-invalid');
+        }
+        if (emailErrorDiv) {
+            emailErrorDiv.classList.add('d-none');
+        }
+        if (passwordErrorDiv) {
+            passwordErrorDiv.classList.add('d-none');
+        }
     }
     
     async function handleLoginSuccess(email, password, isGuest = false) {
@@ -98,13 +104,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }));
             showToast('Welcome, Guest! Redirecting to dashboard...', 'success');
             setTimeout(() => {
-                window.location.href = 'user/dashboard.html';
+                window.location.href = '/user/dashboard.html';
             }, 1000);
             return;
         }
 
         try {
-            const response = await fetch('http://localhost:60136/api/auth/login', {
+            const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -140,14 +146,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         email: data.user.email,
                         role: 'admin'
                     }));
-                    showToast('Welcome, Admin! Redirecting to admin panel...', 'success');
+                    showToast('Welcome, Admin!', 'success');
                     setTimeout(() => {
-                        window.location.href = 'admin/dashboard.html';
+                        window.location.href = '/admin/dashboard.html';
                     }, 1000);
                 } else {
-                    showToast('Welcome! Redirecting to dashboard...', 'success');
+                    showToast('Welcome!', 'success');
                     setTimeout(() => {
-                        window.location.href = 'user/dashboard.html';
+                        window.location.href = '/user/dashboard.html';
                     }, 1000);
                 }
             }
@@ -162,7 +168,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function handleLogin(event) {
+        // ===== IMPORTANT: Prevent form from refreshing =====
         event.preventDefault();
+        console.log('Login form submitted');
+        
         clearErrors();
         
         const isGuestMode = guestCheckbox ? guestCheckbox.checked : false;
@@ -186,16 +195,21 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = passwordInput ? passwordInput.value : '';
         let isValid = true;
         
+        console.log('Email:', email);
+        console.log('Password length:', password.length);
+        
         if (!validateDLSUEmail(email)) {
             if (emailInput) emailInput.classList.add('is-invalid');
             if (emailErrorDiv) emailErrorDiv.classList.remove('d-none');
             isValid = false;
+            console.log('Email validation failed');
         }
         
         if (!validatePassword(password)) {
             if (passwordInput) passwordInput.classList.add('is-invalid');
             if (passwordErrorDiv) passwordErrorDiv.classList.remove('d-none');
             isValid = false;
+            console.log('Password validation failed');
         }
         
         if (!isValid) {
@@ -269,22 +283,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function handleForgotPassword(event) {
-        event.preventDefault();
-        showToast('Password reset: Please contact DLSU IT Services or use "Continue as guest" for view-only access.', 'info');
+    // ===== EVENT LISTENERS =====
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
     }
     
-    if (loginForm) loginForm.addEventListener('submit', handleLogin);
     if (emailInput) {
         emailInput.addEventListener('input', onEmailInput);
         emailInput.addEventListener('blur', onEmailInput);
     }
+    
     if (passwordInput) {
         passwordInput.addEventListener('input', onPasswordInput);
         passwordInput.addEventListener('blur', onPasswordInput);
     }
-    if (guestCheckbox) guestCheckbox.addEventListener('change', onGuestToggle);
-    if (forgotLink) forgotLink.addEventListener('click', handleForgotPassword);
     
-    console.log('[AnimoFlow] Login page initialized with backend authentication');
+    if (guestCheckbox) {
+        guestCheckbox.addEventListener('change', onGuestToggle);
+    }
+    
+    // Forgot password link - just navigate to the page
+    if (forgotLink) {
+        forgotLink.addEventListener('click', function(e) {
+            // Allow the link to work normally
+            console.log('Forgot password clicked');
+        });
+    }
+    
+    console.log('[AnimoFlow] Login page initialized');
 });
